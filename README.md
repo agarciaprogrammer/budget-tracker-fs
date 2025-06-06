@@ -65,5 +65,11 @@ A personal budgeting and expense management web application. Users can track the
 - As a user, I want to visualize my financial activity on a dashboard with charts.
 - As a user, I want my data to be secure and only accessible to me.
 
-## 🧱 Project Structure (Suggested)
+## ✅ Future Improvements
+
+- Support for multiple currencies
+- Recurring expenses/incomes
+- Notifications or insights (e.g. "You are overspending")
+- Expense categories and filters
+- Export to CSV or Excel
 
