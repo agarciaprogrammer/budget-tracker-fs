@@ -5,12 +5,10 @@
         "**/.hg": true,
         "**/.DS_Store": true,
         "**/Thumbs.db": true,
-        "frontend/src": true,
         "frontend/node_modules": true,
         "backend/node_modules": true
     },
     "hide-files.files": [
-        "frontend/src",
         "frontend/node_modules",
         "backend/node_modules"
     ]
