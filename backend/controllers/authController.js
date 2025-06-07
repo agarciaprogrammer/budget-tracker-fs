@@ -36,3 +36,39 @@ exports.login = async (req, res) => {
     res.status(500).json({ message: 'Error del servidor' });
   }
 };
+
+exports.register = async (req, res) => {
+  const { username, password } = req.body;
+
+  try {
+    const existingUser = await userService.getUserByUsername(username);
+    if (existingUser) {
+      return res.status(400).json({ message: 'El usuario ya existe' });
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const newUser = await userService.createUser({
+      username,
+      password: hashedPassword
+    });
+
+    const token = jwt.sign(
+      { sub: newUser.id, username: newUser.username, role: newUser.role },
+      process.env.JWT_SECRET,
+      { expiresIn: '8h', jwtid: newUser.id.toString() }
+    );
+
+    return res.status(201).json({
+      message: 'Usuario creado exitosamente',
+      user: {
+        id: newUser.id,
+        username: newUser.username,
+        role: newUser.role
+      },
+      token
+    });
+  } catch (error) {
+    console.error('Error en registro:', error);
+    res.status(500).json({ message: 'Error del servidor' });
+  }
+};

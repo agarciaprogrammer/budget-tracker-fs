@@ -7,6 +7,8 @@ const sequelize = require('./config/db');
 // Routes (require)
 const authRoutes = require('./routes/auth.routes');
 const userRoutes = require('./routes/user.routes');
+const expenseRoutes = require('./routes/expense.routes');
+const categoryRoutes = require('./routes/category.routes');
 
 const app = express();
 
@@ -16,6 +18,8 @@ app.use(express.json());
 // Routes (app.use)
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
+app.use('/api/expenses', expenseRoutes);
+app.use('/api/categories', categoryRoutes); 
 
 // Default route
 app.get('/', (req, res) => {
