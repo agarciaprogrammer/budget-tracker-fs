@@ -1,5 +1,5 @@
 import { Link, useNavigate } from 'react-router-dom';
-import navStyle from '../styles/Navbar.module.css';
+import navStyle from '../styles/navbar.module.css';
 import { logout } from '../services/authService';
 
 export default function Navbar() {

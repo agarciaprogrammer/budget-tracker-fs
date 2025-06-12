@@ -5,11 +5,9 @@
         "**/.hg": true,
         "**/.DS_Store": true,
         "**/Thumbs.db": true,
-        "frontend/node_modules": true,
         "backend/node_modules": true
     },
     "hide-files.files": [
-        "frontend/node_modules",
         "backend/node_modules"
     ]
 }

@@ -3,6 +3,9 @@ import styles from '../styles/global.module.css';
 import { getExpenses, createExpense, deleteExpense } from '../services/expenseService';
 import { getCategories } from '../services/categoryService';
 import type { Category, Expense } from '../types';
+import FormField from '../components/FormField';
+import Modal from '../components/Modal';
+
 
 export default function Expenses() {
   const [expenses, setExpenses] = useState<Expense[]>([]);
@@ -12,6 +15,7 @@ export default function Expenses() {
   const [date, setDate] = useState('');
   const [categoryId, setCategoryId] = useState('');
   const [loading, setLoading] = useState(false);
+  
 
   const fetchExpenses = async () => {
     setLoading(true);
