@@ -4,7 +4,7 @@ import { getIncomes, createIncome, deleteIncome } from '../services/incomeServic
 import { getCurrentUser } from '../services/authService';
 import type { Income } from '../types';
 import Modal from '../components/Modal';
-//import FormField from '../components/FormField';
+import FormField from '../components/FormField';  
 
 export default function Incomes() {
     const [incomes, setIncomes] = useState<Income[]>([]);
@@ -72,6 +72,7 @@ export default function Incomes() {
         const currentMonth = now.getMonth();
         const currentYear = now.getFullYear();
         
+        // Sum all incomes (both salary and non-salary) for the current month
         return incomes
             .filter(income => {
                 const incomeDate = new Date(income.date);
@@ -114,42 +115,44 @@ export default function Incomes() {
                 title="Agregar Ingreso"
             >
                 <form onSubmit={handleSubmit} className={styles.form}>
-                    <div className={styles.formGroup}>
-                        <input
-                            type="text"
-                            className={styles.input}
-                            placeholder="Descripción"
-                            value={description}
-                            onChange={(e) => setDescription(e.target.value)}
-                        />
-                        <input
-                            type="number"
-                            className={styles.input}
-                            placeholder="Monto"
-                            value={amount}
-                            onChange={(e) => setAmount(e.target.value)}
-                            required
-                        />
-                        <input
-                            type="date"
-                            className={styles.input}
-                            value={date}
-                            onChange={(e) => setDate(e.target.value)}
-                            required
-                        />
-                        <select
-                            className={styles.input}
-                            value={type}
-                            onChange={(e) => setType(e.target.value)}
-                        >
-                            <option value="regular">Ingreso Regular</option>
-                            <option value="salary">Sueldo</option>
-                        </select>
-                        <button type="submit" className={styles.button}>
-                            Agregar
-                        </button>
-                    </div>
-                </form>
+                    <FormField
+                        label="Descripción:"
+                        name="description"
+                        value={description}
+                        onChange={(e) => setDescription(e.target.value)}
+                    />
+                    <FormField
+                        label="Monto:"
+                        name="amount"
+                        type="number"
+                        value={amount}
+                        onChange={(e) => setAmount(e.target.value)}
+                        required
+                    />
+                    <FormField
+                        label="Fecha:"
+                        name="date"
+                        type="date"
+                        value={date}
+                        onChange={(e) => setDate(e.target.value)}
+                        required
+                    />
+                    <FormField
+                        label="Tipo:"
+                        name="type"
+                        type="select"
+                        value={type}
+                        onChange={(e) => setType(e.target.value)}
+                        options={[
+                        { value: "regular", label: "Ingreso Regular" },
+                        { value: "salary", label: "Sueldo" }
+                        ]}
+                    />
+                    <button type="submit" className={styles.buttonFormField}>
+                        Agregar
+                    </button>
+                    </form>
+
             </Modal>
 
             {loading ? (

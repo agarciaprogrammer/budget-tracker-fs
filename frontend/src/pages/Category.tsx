@@ -77,7 +77,6 @@ export default function Category() {
           <table className={styles.table}>
             <thead>
               <tr>
-                <th>ID</th>
                 <th>Nombre</th>
                 <th>Acciones</th>
               </tr>
@@ -85,7 +84,6 @@ export default function Category() {
             <tbody>
               {categories.map((category) => (
                 <tr key={category.id}>
-                  <td>{category.id}</td>
                   <td>{category.name}</td>
                   <td>
                     <button className={styles.buttonDelete}>Eliminar</button>

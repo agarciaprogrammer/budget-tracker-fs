@@ -7,6 +7,14 @@ export interface Expense {
   userId: number;
 }
 
+export interface FixedExpense {
+  id: number;
+  amount: number;
+  description: string;
+  date: string;
+  userId: number;
+}
+
 export interface Income {
   id: number;
   amount: number;
@@ -31,3 +39,4 @@ export interface LoginResponse {
   token: string;
   user: User;
 }
+

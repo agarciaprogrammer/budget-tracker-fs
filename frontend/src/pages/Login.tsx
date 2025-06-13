@@ -54,7 +54,7 @@ export default function Login() {
           required
         />
 
-        <button type="submit" className={styles.button}>
+        <button type="submit" className={styles.button} style={{width: '94%'}}>
           Ingresar
         </button>
 

@@ -10,6 +10,7 @@ const userRoutes = require('./routes/user.routes');
 const expenseRoutes = require('./routes/expense.routes');
 const categoryRoutes = require('./routes/category.routes');
 const incomeRoutes = require('./routes/income.routes');
+const fixedExpenseRoutes = require('./routes/fixedexpense.routes');
 
 const app = express();
 
@@ -22,6 +23,7 @@ app.use('/api/users', userRoutes);
 app.use('/api/expenses', expenseRoutes);
 app.use('/api/categories', categoryRoutes); 
 app.use('/api/incomes', incomeRoutes);
+app.use('/api/fixed-expenses', fixedExpenseRoutes);
 
 // Default route
 app.get('/', (req, res) => {

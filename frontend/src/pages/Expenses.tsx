@@ -4,14 +4,18 @@ import { getExpenses, createExpense, deleteExpense } from '../services/expenseSe
 import { getCategories } from '../services/categoryService';
 import { getIncomes } from '../services/incomeService';
 import { getCurrentUser } from '../services/authService';
-import type { Category, Expense, Income } from '../types';
+import { getFixedExpensesByUserId } from '../services/fixedExpenseService';
+import type { Category, Expense, FixedExpense, Income } from '../types';  
 import Modal from '../components/Modal';
 import FormField from '../components/FormField';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faChevronLeft, faChevronRight } from '@fortawesome/free-solid-svg-icons';
 
 export default function Expenses() {
   const [expenses, setExpenses] = useState<Expense[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [incomes, setIncomes] = useState<Income[]>([]);
+  const [fixedExpenses, setFixedExpenses] = useState<FixedExpense[]>([]);
   const [amount, setAmount] = useState('');
   const [description, setDescription] = useState('');
   const [date, setDate] = useState('');
@@ -61,11 +65,22 @@ export default function Expenses() {
     }
   };
 
+  const fetchFixedExpenses = async () => {
+    if (!currentUser) return;
+    try {
+      const data = await getFixedExpensesByUserId(currentUser.id);
+      setFixedExpenses(data);
+    } catch (err) {
+      console.error('Error fetching fixed expenses:', err);
+    }
+  };
+
   useEffect(() => {
     if (currentUser) {
       fetchExpenses();
       fetchCategories();
       fetchIncomes();
+      fetchFixedExpenses();
     }
   }, [currentMonth]); // Refetch when month changes
 
@@ -113,7 +128,7 @@ export default function Expenses() {
   };
 
   const getMonthName = (date: Date) => {
-    return date.toLocaleString('es-AR', { month: 'long' });
+    return date.toLocaleString('es-AR', { month: 'long', year: 'numeric' });
   };
 
   const calculateTotals = () => {
@@ -138,18 +153,35 @@ export default function Expenses() {
       })
       .reduce((sum, income) => sum + income.amount, 0);
 
-    // For now, fixed expenses are 0
-    const totalFixedExpenses = 0;
+    // Calculate total fixed expenses for current month
+    const totalFixedExpenses = fixedExpenses
+      .filter(fixedExpense => {
+        const fixedExpenseDate = new Date(fixedExpense.date);
+        return fixedExpenseDate.getMonth() === currentMonth.getMonth() &&
+               fixedExpenseDate.getFullYear() === currentMonth.getFullYear();
+      })
+      .reduce((sum, fixedExpense) => sum + fixedExpense.amount, 0);
     
     // Calculate remaining budget
-    const remainingBudget = totalIncome - totalExpenses;
+    const remainingBudget = totalIncome - totalExpenses - totalFixedExpenses;
+
+    // Calculate days in month using DAYS360 equivalent
+    const firstDayOfMonth = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), 1);
+    const lastDayOfMonth = new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 0);
+    
+    // DAYS360 equivalent calculation
+    const daysInMonth = Math.floor((lastDayOfMonth.getTime() - firstDayOfMonth.getTime()) / (1000 * 60 * 60 * 24)) + 1;
+    
+    // Calculate budget per day
+    const budgetPerDay = totalIncome / daysInMonth;
 
     return {
       totalExpenses,
       totalIncome,
       totalSalary,
       totalFixedExpenses,
-      remainingBudget
+      remainingBudget,
+      budgetPerDay,
     };
   };
 
@@ -164,7 +196,7 @@ export default function Expenses() {
             className={styles.monthButton}
             onClick={() => changeMonth('prev')}
           >
-            ←
+            <FontAwesomeIcon icon={faChevronLeft} />
           </button>
           <span className={styles.currentMonth}>
             {getMonthName(currentMonth)}
@@ -173,17 +205,29 @@ export default function Expenses() {
             className={styles.monthButton}
             onClick={() => changeMonth('next')}
           >
-            →
+            <FontAwesomeIcon icon={faChevronRight} />
           </button>
         </div>
       </div>
 
       <button 
-        className={styles.addButton}
+        className={styles.addButton} style={{ marginBottom: '-10px' }}
         onClick={() => setIsModalOpen(true)}
       >
         Agregar Gasto
       </button>
+
+      <div className={styles.summary}>
+        <div className={styles.summaryItem}>
+          <h3>Presupuesto del Mes</h3>
+          <p>${(totals.totalIncome - totals.totalFixedExpenses).toFixed(2)}</p>
+        </div>
+        <div className={styles.summaryItem}>
+          <h3>Presupuesto por Día</h3>
+          <p>${totals.budgetPerDay.toFixed(2)}</p>
+        </div>
+      </div>
+      <br />
 
       <Modal
         isOpen={isModalOpen}
@@ -286,21 +330,19 @@ export default function Expenses() {
 
           <div className={styles.summary}>
             <div className={styles.summaryItem}>
-              <h3>Total Gastos</h3>
+              <h3>Gastos del Mes</h3>
               <p>${totals.totalExpenses.toFixed(2)}</p>
-            </div>
-            <div className={styles.summaryItem}>
-              <h3>Ingresos Totales</h3>
-              <p>${totals.totalIncome.toFixed(2)}</p>
-            </div>
-            <div className={styles.summaryItem}>
-              <h3>Sueldo del Mes</h3>
-              <p>${totals.totalSalary.toFixed(2)}</p>
             </div>
             <div className={styles.summaryItem}>
               <h3>Presupuesto Restante</h3>
               <p className={totals.remainingBudget < 0 ? styles.negative : styles.positive}>
                 ${totals.remainingBudget.toFixed(2)}
+              </p>
+            </div>
+            <div className={styles.summaryItem}>
+              <h3>Presupuesto Vs Sueldo</h3>
+              <p className={totals.remainingBudget < 0 ? styles.negative : styles.positive}>
+                ${(totals.totalSalary - totals.totalExpenses).toFixed(2)}
               </p>
             </div>
           </div>
