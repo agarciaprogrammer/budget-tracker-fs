@@ -8,7 +8,7 @@ async function startServer() {
     await sequelize.authenticate();
     console.log('Conexión a PostgreSQL exitosa');
 
-    await sequelize.sync(); // Usar { force: true } para resetear la bdd
+    await sequelize.sync(); // This will reset your database { force: true }
     console.log('Modelos sincronizados');
 
     app.listen(PORT, () =>

@@ -9,6 +9,7 @@ const authRoutes = require('./routes/auth.routes');
 const userRoutes = require('./routes/user.routes');
 const expenseRoutes = require('./routes/expense.routes');
 const categoryRoutes = require('./routes/category.routes');
+const incomeRoutes = require('./routes/income.routes');
 
 const app = express();
 
@@ -20,6 +21,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/expenses', expenseRoutes);
 app.use('/api/categories', categoryRoutes); 
+app.use('/api/incomes', incomeRoutes);
 
 // Default route
 app.get('/', (req, res) => {

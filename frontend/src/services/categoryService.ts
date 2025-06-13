@@ -11,17 +11,17 @@ export async function getCategories(): Promise<Category[]> {
   return response.data;
 }
 
-export async function createCategory(expense: Omit<Category, 'id'>): Promise<Category> {
+export async function createCategory(category: Omit<Category, 'id'>): Promise<Category> {
   const token = localStorage.getItem('token');
-  const response = await axios.post<Category>(API_URL, expense, {
+  const response = await axios.post<Category>(API_URL, category, {
     headers: {Authorization: `Bearer ${token}`},
   });
   return response.data;
 }
 
-export async function updateCategory(id: number, expense: Omit<Category, 'id'>): Promise<Category> {
+export async function updateCategory(id: number, category: Omit<Category, 'id'>): Promise<Category> {
   const token = localStorage.getItem('token');
-  const response = await axios.put<Category>(`${API_URL}/${id}`, expense, {
+  const response = await axios.put<Category>(`${API_URL}/${id}`, category, {
     headers: {Authorization: `Bearer ${token}`},
   });
   return response.data;

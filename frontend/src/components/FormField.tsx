@@ -1,12 +1,17 @@
 import styles from '../styles/global.module.css';
 
+interface Option {
+  value: string;
+  label: string;
+}
+
 export interface FormFieldProps {
     label: string;
     name: string;
     type?: string;
     value?: string | number;
     onChange: (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => void;
-    options?: string[];
+    options?: Option[];
     required?: boolean;
 }
 
@@ -22,12 +27,13 @@ export default function FormField({label, type, name, value, onChange, options, 
                     name={name}
                     value={value}
                     onChange={onChange}
-                    className={styles.select}
+                    className={styles.selectFormField}
                     required={required}
                 >
+                    <option value="">Seleccionar...</option>
                     {options?.map((option) => (
-                        <option key={option} value={option}>
-                            {option}
+                        <option key={option.value} value={option.value}>
+                            {option.label}
                         </option>
                     ))}
                 </select>
@@ -38,7 +44,7 @@ export default function FormField({label, type, name, value, onChange, options, 
                     name={name}
                     value={value}
                     onChange={onChange}
-                    className={styles.input}
+                    className={styles.inputFormField}
                     required={required}
                 />
             )}

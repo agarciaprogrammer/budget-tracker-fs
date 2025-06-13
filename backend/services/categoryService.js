@@ -4,8 +4,9 @@ const createCategory = async ({ name, userId }) => {
   return await Category.create({ name, userId });
 };
 
-const getAllCategories = async () => {
+const getAllCategories = async (userId) => {
     return await Category.findAll({
+        where: { userId },
         include: [{
             model: Expense,
             as: 'expenses'
@@ -15,15 +16,21 @@ const getAllCategories = async () => {
 
 const updateCategory = async (id, data) => {
     const [updatedRowsCount, updatedRows] = await Category.update(data, {
-        where: { id },
+        where: { 
+            id,
+            userId: data.userId
+        },
         returning: true,
     });
     return updatedRowsCount > 0 ? updatedRows[0] : null;
 }
 
-const deleteCategory = async (id) => {
+const deleteCategory = async (id, userId) => {
     const deletedRowsCount = await Category.destroy({
-        where: { id }
+        where: { 
+            id,
+            userId
+        }
     });
     return deletedRowsCount > 0;
 };

@@ -2,7 +2,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Home from './pages/Home';
 import Register from './pages/Register';
 //import Dashboard from './pages/Dashboard';
-//import Incomes from './pages/Incomes';
+import Incomes from './pages/Incomes';
 //import FixedExpenses from './pages/FixedExpenses';
 import Category from './pages/Category';
 import Login from './pages/Login';
@@ -20,8 +20,8 @@ function App() {
           <Route path="/home" element={<Home />} />
           <Route path="/expenses" element={<Expenses />} />
           <Route path="/category" element={<Category />} />
+          <Route path="/incomes" element={<Incomes />} />
           {/* <Route path="/dashboard" element={<Dashboard />} /> */}
-          {/* <Route path="/incomes" element={<Incomes />} /> */}
           {/* <Route path="/fixed-expenses" element={<FixedExpenses />} /> */}
         </Route>
       </Routes>

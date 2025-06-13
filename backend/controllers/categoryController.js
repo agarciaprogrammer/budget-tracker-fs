@@ -3,7 +3,6 @@ const categoryService = require('../services/categoryService');
 const createCategory = async (req, res) => {
     try {
         const { name } = req.body;
-        console.log('req.user:', req.user);
         const userId = req.user.sub;
 
         const category = await categoryService.createCategory({ name, userId });
@@ -14,11 +13,9 @@ const createCategory = async (req, res) => {
     }
 };
 
-
-
 const getAllCategories = async (req, res) => {
     try {
-        const categories = await categoryService.getAllCategories();
+        const categories = await categoryService.getAllCategories(req.user.sub);
         res.status(200).json(categories);
     } catch (error) {
         res.status(500).json({ error: 'Failed to fetch categories' });
@@ -28,7 +25,10 @@ const getAllCategories = async (req, res) => {
 const updateCategory = async (req, res) => {
     const { id } = req.params;
     try {
-        const updatedCategory = await categoryService.updateCategory(id, req.body);
+        const updatedCategory = await categoryService.updateCategory(id, {
+            ...req.body,
+            userId: req.user.sub
+        });
         if (updatedCategory) {
             res.status(200).json(updatedCategory);
         } else {
@@ -42,7 +42,7 @@ const updateCategory = async (req, res) => {
 const deleteCategory = async (req, res) => {
     const { id } = req.params;
     try {
-        const deleted = await categoryService.deleteCategory(id);
+        const deleted = await categoryService.deleteCategory(id, req.user.sub);
         if (deleted) {
             res.status(204).send();
         } else {

@@ -13,10 +13,9 @@ const createExpense = async (req, res) => {
     }
 };
 
-
 const getAllExpenses = async (req, res) => {
     try {
-        const expenses = await eService.getAllExpenses();
+        const expenses = await eService.getAllExpenses(req.user.sub);
         res.status(200).json(expenses);
     } catch (error) {
         res.status(500).json({ error: 'Failed to fetch expenses' });
@@ -26,7 +25,10 @@ const getAllExpenses = async (req, res) => {
 const updateExpense = async (req, res) => {
     const { id } = req.params;
     try {
-        const updatedExpense = await eService.updateExpense(id, req.body);
+        const updatedExpense = await eService.updateExpense(id, {
+            ...req.body,
+            userId: req.user.sub
+        });
         if (updatedExpense) {
             res.status(200).json(updatedExpense);
         } else {
@@ -40,7 +42,7 @@ const updateExpense = async (req, res) => {
 const deleteExpense = async (req, res) => {
     const { id } = req.params;
     try {
-        const deleted = await eService.deleteExpense(id);
+        const deleted = await eService.deleteExpense(id, req.user.sub);
         if (deleted) {
             res.status(204).send();
         } else {

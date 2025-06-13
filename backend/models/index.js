@@ -4,14 +4,16 @@ import sequelize from '../config/db.js';
 import UserModel from './User.js';
 import ExpenseModel from './Expense.js';
 import CategoryModel from './Category.js';
+import IncomeModel from './Income.js';
 
 const { Sequelize } = SequelizePkg;
 
 const User = UserModel(sequelize, Sequelize.DataTypes);
 const Expense = ExpenseModel(sequelize, Sequelize.DataTypes);
 const Category = CategoryModel(sequelize, Sequelize.DataTypes);
+const Income = IncomeModel(sequelize, Sequelize.DataTypes);
 
-const models = { User, Expense, Category };
+const models = { User, Expense, Category, Income };
 
 // Asociaciones
 Object.values(models).forEach((model) => {
@@ -25,5 +27,6 @@ export {
   Sequelize,
   User,
   Expense,
-  Category
+  Category,
+  Income
 };

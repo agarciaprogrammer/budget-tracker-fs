@@ -4,11 +4,22 @@ export interface Expense {
   description: string;
   date: string;
   categoryId: number;
+  userId: number;
+}
+
+export interface Income {
+  id: number;
+  amount: number;
+  description: string;
+  date: string;
+  userId: number;
+  type: string;
 }
 
 export interface Category {
   id: number;
   name: string;
+  userId: number;
 }
 
 export interface User {
