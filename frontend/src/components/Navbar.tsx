@@ -16,6 +16,7 @@ export default function Navbar() {
       <ul className={navStyle.navList}>
         <li><Link to="/home" className={navStyle.link}>Inicio</Link></li>
         <li><Link to="/expenses" className={navStyle.link}>Gastos</Link></li>
+        <li><Link to="/category" className={navStyle.link}>Categorias</Link></li>
         <li><button onClick={handleLogout} className={navStyle.link} style={{ background: 'none', border: 'none', cursor: 'pointer' }}>Logout</button></li>
       </ul>
     </nav>

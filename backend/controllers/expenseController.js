@@ -2,12 +2,17 @@ const eService = require('../services/expenseService');
 
 const createExpense = async (req, res) => {
     try {
-        const expense = await eService.createExpense(req.body);
+        const expense = await eService.createExpense({
+            ...req.body,
+            userId: req.user.sub
+        });
         res.status(201).json(expense);
     } catch (error) {
+        console.error('Error al crear gasto:', error);
         res.status(500).json({ error: 'Failed to create expense' });
     }
 };
+
 
 const getAllExpenses = async (req, res) => {
     try {

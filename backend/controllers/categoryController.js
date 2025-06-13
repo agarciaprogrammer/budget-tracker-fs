@@ -2,12 +2,19 @@ const categoryService = require('../services/categoryService');
 
 const createCategory = async (req, res) => {
     try {
-        const category = await categoryService.createCategory(req.body);
+        const { name } = req.body;
+        console.log('req.user:', req.user);
+        const userId = req.user.sub;
+
+        const category = await categoryService.createCategory({ name, userId });
         res.status(201).json(category);
     } catch (error) {
+        console.error('Error al crear categoría:', error);
         res.status(500).json({ error: 'Failed to create category' });
     }
 };
+
+
 
 const getAllCategories = async (req, res) => {
     try {

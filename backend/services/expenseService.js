@@ -1,4 +1,4 @@
-const { Expense } = require('../models/Expense');
+const { Expense } = require('../models');
 
 const createExpense = async (data) => {
     return await Expense.create(data);

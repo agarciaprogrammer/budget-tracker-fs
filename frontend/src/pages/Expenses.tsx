@@ -3,8 +3,8 @@ import styles from '../styles/global.module.css';
 import { getExpenses, createExpense, deleteExpense } from '../services/expenseService';
 import { getCategories } from '../services/categoryService';
 import type { Category, Expense } from '../types';
-import FormField from '../components/FormField';
-import Modal from '../components/Modal';
+//import FormField from '../components/FormField';
+//import Modal from '../components/Modal';
 
 
 export default function Expenses() {
@@ -78,82 +78,102 @@ export default function Expenses() {
     <div className={styles.container}>
       <h1 className={styles.title}>Gastos</h1>
 
-      <form onSubmit={handleSubmit} style={{ marginBottom: '2rem' }}>
-        <input
-          type="number"
-          className={styles.input}
-          placeholder="Monto"
-          value={amount}
-          onChange={(e) => setAmount(e.target.value)}
-          required
-        />
-        <input
-          type="text"
-          className={styles.input}
-          placeholder="Descripción"
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-        />
-        <input
-          type="date"
-          className={styles.input}
-          value={date}
-          onChange={(e) => setDate(e.target.value)}
-          required
-        />
-        <select
-          className={styles.input}
-          value={categoryId}
-          onChange={(e) => setCategoryId(e.target.value)}
-          required
-        >
-          <option value="">Seleccionar categoría</option>
-          {categories.map((cat) => (
-            <option key={cat.id} value={cat.id}>{cat.name}</option>
-          ))}
-        </select>
-        <button type="submit" className={styles.button}>Agregar</button>
+      <form onSubmit={handleSubmit} className={styles.form}>
+        <div className={styles.formGroup}>
+          <input
+            type="text"
+            className={styles.input}
+            placeholder="Descripción"
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+          />
+          <input
+            type="number"
+            className={styles.input}
+            placeholder="Monto"
+            value={amount}
+            onChange={(e) => setAmount(e.target.value)}
+            required
+          />
+          <input
+            type="date"
+            className={styles.input}
+            value={date}
+            onChange={(e) => setDate(e.target.value)}
+            required
+          />
+          <select
+            className={styles.input}
+            value={categoryId}
+            onChange={(e) => setCategoryId(e.target.value)}
+            required
+          >
+            <option value="">Categoría</option>
+            {categories.map((cat) => (
+              <option key={cat.id} value={cat.id}>
+                {cat.name}
+              </option>
+            ))}
+          </select>
+          <button type="submit" className={styles.button}>
+            Agregar
+          </button>
+        </div>
       </form>
 
       {loading ? (
         <p>Cargando...</p>
       ) : (
         <div className={styles.card}>
-          <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-            <thead>
-              <tr>
-                <th>Monto</th>
-                <th>Descripción</th>
-                <th>Fecha</th>
-                <th>Categoría</th>
-                <th></th>
-              </tr>
-            </thead>
-            <tbody>
-              {expenses.map((exp) => (
-                <tr key={exp.id}>
-                  <td>${exp.amount.toFixed(2)}</td>
-                  <td>{exp.description || '-'}</td>
-                  <td>{new Date(exp.date).toLocaleDateString()}</td>
-                  <td>
-                    {categories.find((cat) => cat.id === exp.categoryId)?.name || 'Sin categoría'}
-                  </td>
-                  <td>
-                    <button onClick={() => handleDelete(exp.id)} className={styles.button} style={{ backgroundColor: '#ff3b30' }}>
-                      Eliminar
-                    </button>
-                  </td>
-                </tr>
-              ))}
-              {expenses.length === 0 && (
+          <div className={styles.tableWrapper}>
+            <table className={styles.table}>
+              <thead>
                 <tr>
-                  <td colSpan={5}>Sin gastos registrados.</td>
+                  <th>Descripción</th>
+                  <th>Monto</th>
+                  <th>Fecha</th>
+                  <th>Categoría</th>
+                  <th>Acciones</th>
                 </tr>
-              )}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {expenses.map((exp) => (
+                  <tr key={exp.id}>
+                    <td>{exp.description || '-'}</td>
+                    <td>${exp.amount.toFixed(2)}</td>
+                    <td>
+                      {new Date(exp.date).toLocaleDateString('es-AR', {
+                        day: '2-digit',
+                        month: '2-digit',
+                        year: 'numeric',
+                      })}
+                    </td>
+                    <td>
+                      {categories.find((cat) => cat.id === exp.categoryId)?.name || 'Sin categoría'}
+                    </td>
+                    <td>
+                      <div className={styles.actions}>
+                        <button
+                          onClick={() => handleDelete(exp.id)}
+                          className={styles.buttonDelete}
+                        >
+                          Eliminar
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+                {expenses.length === 0 && (
+                  <tr>
+                    <td colSpan={5}>Sin gastos registrados.</td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
         </div>
       )}
     </div>
   );
+
 };
