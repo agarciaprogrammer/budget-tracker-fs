@@ -4,7 +4,7 @@ import { getIncomes, createIncome, deleteIncome } from '../services/incomeServic
 import { getCurrentUser } from '../services/authService';
 import type { Income } from '../types';
 import Modal from '../components/Modal';
-import FormField from '../components/FormField';
+//import FormField from '../components/FormField';
 
 export default function Incomes() {
     const [incomes, setIncomes] = useState<Income[]>([]);
