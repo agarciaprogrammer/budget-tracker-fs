@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import styles from '../styles/global.module.css';
-import { getExpenses, createExpense, deleteExpense } from '../services/expenseService';
+import { getExpenses, createExpense, deleteExpense, updateExpense } from '../services/expenseService';
 import { getCategories } from '../services/categoryService';
 import { getIncomes } from '../services/incomeService';
 import { getCurrentUser } from '../services/authService';
@@ -9,7 +9,7 @@ import type { Category, Expense, FixedExpense, Income } from '../types';
 import Modal from '../components/Modal';
 import FormField from '../components/FormField';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faChevronLeft, faChevronRight } from '@fortawesome/free-solid-svg-icons';
+import { faChevronLeft, faChevronRight, faFilter, faSortUp, faSortDown } from '@fortawesome/free-solid-svg-icons';
 
 export default function Expenses() {
   const [expenses, setExpenses] = useState<Expense[]>([]);
@@ -22,7 +22,18 @@ export default function Expenses() {
   const [categoryId, setCategoryId] = useState('');
   const [loading, setLoading] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [isFiltersOpen, setIsFiltersOpen] = useState(false);
   const [currentMonth, setCurrentMonth] = useState(new Date());
+  const [editingExpense, setEditingExpense] = useState<Expense | null>(null);
+  const [expenseToDelete, setExpenseToDelete] = useState<number | null>(null);
+  const [filters, setFilters] = useState({
+    categoryId: '',
+    minAmount: '',
+    maxAmount: '',
+    sortBy: 'date',
+    sortOrder: 'desc'
+  });
   const currentUser = getCurrentUser();
 
   const fetchExpenses = async () => {
@@ -84,36 +95,63 @@ export default function Expenses() {
     }
   }, [currentMonth]); // Refetch when month changes
 
+  const handleEdit = (expense: Expense) => {
+    setEditingExpense(expense);
+    setAmount(expense.amount.toString());
+    setDescription(expense.description || '');
+    setDate(expense.date);
+    setCategoryId(expense.categoryId.toString());
+    setIsModalOpen(true);
+  };
+
+  const handleDelete = async (id: number) => {
+    setExpenseToDelete(id);
+    setIsDeleteModalOpen(true);
+  };
+
+  const confirmDelete = async () => {
+    if (!expenseToDelete) return;
+    try {
+      await deleteExpense(expenseToDelete);
+      setExpenses((prev) => prev.filter((e) => e.id !== expenseToDelete));
+      setIsDeleteModalOpen(false);
+      setExpenseToDelete(null);
+    } catch (err) {
+      console.error('Error deleting expense:', err);
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!amount || !date || !categoryId) return;
 
     try {
-      await createExpense({
-        amount: parseFloat(amount),
-        description,
-        date,
-        categoryId: parseInt(categoryId),
-        userId: currentUser?.id || 0,
-      });
+      if (editingExpense) {
+        await updateExpense(editingExpense.id, {
+          amount: parseFloat(amount),
+          description,
+          date,
+          categoryId: parseInt(categoryId),
+          userId: currentUser?.id || 0,
+        });
+      } else {
+        await createExpense({
+          amount: parseFloat(amount),
+          description,
+          date,
+          categoryId: parseInt(categoryId),
+          userId: currentUser?.id || 0,
+        });
+      }
       setAmount('');
       setDescription('');
       setDate('');
       setCategoryId('');
+      setEditingExpense(null);
       setIsModalOpen(false);
       fetchExpenses();
     } catch (err) {
-      console.error('Error creating expense:', err);
-    }
-  };
-
-  const handleDelete = async (id: number) => {
-    if (!confirm('¿Eliminar gasto?')) return;
-    try {
-      await deleteExpense(id);
-      setExpenses((prev) => prev.filter((e) => e.id !== id));
-    } catch (err) {
-      console.error('Error deleting expense:', err);
+      console.error('Error saving expense:', err);
     }
   };
 
@@ -187,35 +225,140 @@ export default function Expenses() {
 
   const totals = calculateTotals();
 
+  const applyFilters = (expenses: Expense[]) => {
+    let filtered = [...expenses];
+
+    // Apply category filter
+    if (filters.categoryId) {
+      filtered = filtered.filter(exp => exp.categoryId.toString() === filters.categoryId);
+    }
+
+    // Apply amount range filter
+    if (filters.minAmount) {
+      filtered = filtered.filter(exp => exp.amount >= parseFloat(filters.minAmount));
+    }
+    if (filters.maxAmount) {
+      filtered = filtered.filter(exp => exp.amount <= parseFloat(filters.maxAmount));
+    }
+
+    // Apply sorting
+    filtered.sort((a, b) => {
+      let comparison = 0;
+      switch (filters.sortBy) {
+        case 'date':
+          comparison = new Date(a.date).getTime() - new Date(b.date).getTime();
+          break;
+        case 'amount':
+          comparison = a.amount - b.amount;
+          break;
+        case 'category':
+          const categoryA = categories.find(cat => cat.id === a.categoryId)?.name || '';
+          const categoryB = categories.find(cat => cat.id === b.categoryId)?.name || '';
+          comparison = categoryA.localeCompare(categoryB);
+          break;
+      }
+      return filters.sortOrder === 'asc' ? comparison : -comparison;
+    });
+
+    return filtered;
+  };
+
+  const filteredExpenses = applyFilters(expenses);
+
   return (
     <div className={styles.container}>
       <div className={styles.header}>
         <h1 className={styles.title}>Gastos</h1>
-        <div className={styles.monthNavigation}>
-          <button 
-            className={styles.monthButton}
-            onClick={() => changeMonth('prev')}
-          >
-            <FontAwesomeIcon icon={faChevronLeft} />
-          </button>
-          <span className={styles.currentMonth}>
-            {getMonthName(currentMonth)}
-          </span>
-          <button 
-            className={styles.monthButton}
-            onClick={() => changeMonth('next')}
-          >
-            <FontAwesomeIcon icon={faChevronRight} />
-          </button>
+        <div className={styles.headerActions}>
+          
+          <div className={styles.monthNavigation}>
+            <button 
+              className={styles.monthButton}
+              onClick={() => changeMonth('prev')}
+            >
+              <FontAwesomeIcon icon={faChevronLeft} />
+            </button>
+            <span className={styles.currentMonth}>
+              {getMonthName(currentMonth)}
+            </span>
+            <button 
+              className={styles.monthButton}
+              onClick={() => changeMonth('next')}
+            >
+              <FontAwesomeIcon icon={faChevronRight} />
+            </button>
+          </div>
         </div>
       </div>
 
+      {isFiltersOpen && (
+        <div className={styles.filtersPanel}>
+          <h3>Filtros</h3>
+          <FormField
+            label="Categoría: "
+            name="categoryFilter"
+            type="select"
+            value={filters.categoryId}
+            onChange={(e) => setFilters(prev => ({ ...prev, categoryId: e.target.value }))}
+            options={categories.map(cat => ({
+              value: cat.id.toString(),
+              label: cat.name
+            }))}
+          />
+          <FormField
+            label="Monto Mínimo: "
+            name="minAmount"
+            type="number"
+            value={filters.minAmount}
+            onChange={(e) => setFilters(prev => ({ ...prev, minAmount: e.target.value }))}
+          />
+          <FormField
+            label="Monto Máximo: "
+            name="maxAmount"
+            type="number"
+            value={filters.maxAmount}
+            onChange={(e) => setFilters(prev => ({ ...prev, maxAmount: e.target.value }))}
+          />
+          <label>Ordenar por:</label>
+          <div className={styles.sortControls}>
+            <select
+              value={filters.sortBy}
+              onChange={(e) => setFilters(prev => ({ ...prev, sortBy: e.target.value }))}
+              className={styles.selectFormField}
+            >
+              <option value="date">Fecha</option>
+              <option value="amount">Monto</option>
+              <option value="category">Categoría</option>
+            </select>
+            <button
+              onClick={() => setFilters(prev => ({ 
+                ...prev, 
+                sortOrder: prev.sortOrder === 'asc' ? 'desc' : 'asc' 
+              }))}
+              className={styles.sortButton}
+            >
+              <FontAwesomeIcon icon={filters.sortOrder === 'asc' ? faSortUp : faSortDown} />
+            </button>
+          </div>
+        </div>
+      )}
+
       <button 
-        className={styles.addButton} style={{ marginBottom: '-10px' }}
-        onClick={() => setIsModalOpen(true)}
+        className={styles.addButton} 
+        style={{ marginBottom: '-10px' }}
+        onClick={() => {
+          setEditingExpense(null);
+          setAmount('');
+          setDescription('');
+          setDate('');
+          setCategoryId('');
+          setIsModalOpen(true);
+        }}
       >
         Agregar Gasto
       </button>
+
+      
 
       <div className={styles.summary}>
         <div className={styles.summaryItem}>
@@ -229,12 +372,22 @@ export default function Expenses() {
       </div>
       <br />
 
+      <button 
+            className={styles.filterButton}
+            onClick={() => setIsFiltersOpen(!isFiltersOpen)}
+          >
+            <FontAwesomeIcon icon={faFilter} /> Filtros
+      </button>
+
       <Modal
         isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        title="Nuevo Gasto"
+        onClose={() => {
+          setIsModalOpen(false);
+          setEditingExpense(null);
+        }}
+        title={editingExpense ? "Editar Gasto" : "Nuevo Gasto"}
       >
-        <form onSubmit={handleSubmit} className={styles.form} >
+        <form onSubmit={handleSubmit} className={styles.form}>
           <FormField
             label="Descripción: "
             name="description"
@@ -270,9 +423,39 @@ export default function Expenses() {
             required
           />
           <button type="submit" className={styles.buttonFormField}>
-            Agregar
+            {editingExpense ? "Guardar" : "Agregar"}
           </button>
         </form>
+      </Modal>
+
+      <Modal
+        isOpen={isDeleteModalOpen}
+        onClose={() => {
+          setIsDeleteModalOpen(false);
+          setExpenseToDelete(null);
+        }}
+        title="Confirmar Eliminación"
+      >
+        <div className={styles.deleteConfirmation}>
+          <p>¿Estás seguro que deseas eliminar este gasto?</p>
+          <div className={styles.deleteActions}>
+            <button 
+              onClick={() => {
+                setIsDeleteModalOpen(false);
+                setExpenseToDelete(null);
+              }}
+              className={styles.buttonCancel}
+            >
+              Cancelar
+            </button>
+            <button 
+              onClick={confirmDelete}
+              className={styles.buttonDelete}
+            >
+              Eliminar
+            </button>
+          </div>
+        </div>
       </Modal>
 
       {loading ? (
@@ -292,7 +475,7 @@ export default function Expenses() {
                   </tr>
                 </thead>
                 <tbody>
-                  {expenses.map((exp) => (
+                  {filteredExpenses.map((exp) => (
                     <tr key={exp.id}>
                       <td>{exp.description || '-'}</td>
                       <td>${exp.amount.toFixed(2)}</td>
@@ -309,6 +492,12 @@ export default function Expenses() {
                       <td>
                         <div className={styles.actions}>
                           <button
+                            onClick={() => handleEdit(exp)}
+                            className={styles.buttonEdit}
+                          >
+                            Editar
+                          </button>
+                          <button
                             onClick={() => handleDelete(exp.id)}
                             className={styles.buttonDelete}
                           >
@@ -318,7 +507,7 @@ export default function Expenses() {
                       </td>
                     </tr>
                   ))}
-                  {expenses.length === 0 && (
+                  {filteredExpenses.length === 0 && (
                     <tr>
                       <td colSpan={5}>Sin gastos registrados.</td>
                     </tr>

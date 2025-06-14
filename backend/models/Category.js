@@ -7,13 +7,19 @@ module.exports = (sequelize, DataTypes) => {
     },
     name: {
       type: DataTypes.STRING,
-      allowNull: false,
-      unique: true
+      allowNull: false
     },
     userId: {
       type: DataTypes.INTEGER,
       allowNull: false
     }
+  }, {
+    indexes: [
+      {
+        unique: true,
+        fields: ['name', 'userId']
+      }
+    ]
   });
 
   Category.associate = (models) => {

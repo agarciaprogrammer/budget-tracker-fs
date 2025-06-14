@@ -1,14 +1,17 @@
 import { useEffect, useState } from 'react';
 import styles from '../styles/global.module.css';
-import { getCategories, createCategory } from '../services/categoryService';
+import { getCategories, createCategory, deleteCategory } from '../services/categoryService';
 import { getCurrentUser } from '../services/authService';
 import type { Category } from '../types';
+import Modal from '../components/Modal';
 
 export default function Category() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [newCategoryName, setNewCategoryName] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [categoryToDelete, setCategoryToDelete] = useState<number | null>(null);
   const currentUser = getCurrentUser();
 
   const fetchCategories = async () => {
@@ -36,6 +39,16 @@ export default function Category() {
     if (!newCategoryName.trim() || !currentUser) return;
 
     try {
+      // Check if category name already exists for this user
+      const existingCategory = categories.find(
+        cat => cat.name.toLowerCase() === newCategoryName.toLowerCase() && cat.userId === currentUser.id
+      );
+
+      if (existingCategory) {
+        setError('Ya tienes una categoría con este nombre. Por favor, usa un nombre diferente.');
+        return;
+      }
+
       const newCategory = await createCategory({ 
         name: newCategoryName,
         userId: currentUser.id 
@@ -43,9 +56,38 @@ export default function Category() {
       setCategories(prev => [...prev, newCategory]);
       setNewCategoryName('');
       setError('');
-    } catch (err) {
+    } catch (err: any) {
       console.error('Error creando categoría:', err);
-      setError('No se pudo crear la categoría');
+      if (err.response?.status === 409) {
+        setError('Ya existe una categoría con este nombre. Por favor, usa un nombre diferente.');
+      } else {
+        setError('No se pudo crear la categoría. Por favor, intente nuevamente.');
+      }
+    }
+  };
+
+  const handleDelete = (id: number) => {
+    setCategoryToDelete(id);
+    setIsDeleteModalOpen(true);
+  };
+
+  const confirmDelete = async () => {
+    if (!categoryToDelete) return;
+    try {
+      await deleteCategory(categoryToDelete);
+      setCategories(prev => prev.filter(cat => cat.id !== categoryToDelete));
+      setIsDeleteModalOpen(false);
+      setCategoryToDelete(null);
+      setError('');
+    } catch (err: any) {
+      console.error('Error deleting category:', err);
+      if (err.response?.status === 500) {
+        setError('No se puede eliminar esta categoría porque está siendo utilizada en gastos existentes. Primero elimine o modifique los gastos asociados.');
+      } else {
+        setError('No se pudo eliminar la categoría. Por favor, intente nuevamente.');
+      }
+      setIsDeleteModalOpen(false);
+      setCategoryToDelete(null);
     }
   };
 
@@ -56,7 +98,7 @@ export default function Category() {
   return (
     <div className={styles.container}> 
       <form onSubmit={handleCreateCategory} className={styles.formFields}>
-      <h1 className={styles.title}>Categorías</h1>
+        <h1 className={styles.title}>Categorías</h1>
         <input
           type="text"
           placeholder="Nueva categoría"
@@ -86,7 +128,12 @@ export default function Category() {
                 <tr key={category.id}>
                   <td>{category.name}</td>
                   <td>
-                    <button className={styles.buttonDelete}>Eliminar</button>
+                    <button 
+                      onClick={() => handleDelete(category.id)}
+                      className={styles.buttonDelete}
+                    >
+                      Eliminar
+                    </button>
                   </td>
                 </tr>
               ))}
@@ -94,6 +141,36 @@ export default function Category() {
           </table>
         </div>
       </div>
+
+      <Modal
+        isOpen={isDeleteModalOpen}
+        onClose={() => {
+          setIsDeleteModalOpen(false);
+          setCategoryToDelete(null);
+        }}
+        title="Confirmar Eliminación"
+      >
+        <div className={styles.deleteConfirmation}>
+          <p>¿Estás seguro que deseas eliminar esta categoría?</p>
+          <div className={styles.deleteActions}>
+            <button 
+              onClick={() => {
+                setIsDeleteModalOpen(false);
+                setCategoryToDelete(null);
+              }}
+              className={styles.buttonCancel}
+            >
+              Cancelar
+            </button>
+            <button 
+              onClick={confirmDelete}
+              className={styles.buttonDelete}
+            >
+              Eliminar
+            </button>
+          </div>
+        </div>
+      </Modal>
     </div>
   );
 }

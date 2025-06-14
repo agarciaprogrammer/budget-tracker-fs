@@ -8,8 +8,9 @@ async function startServer() {
     await sequelize.authenticate();
     console.log('Conexión a PostgreSQL exitosa');
 
-    await sequelize.sync(); // This will reset your database { force: true }
-    console.log('Modelos sincronizados');
+    // Force sync to update the schema 
+    await sequelize.sync();
+    console.log('Modelos sincronizados (schema actualizado)');
 
     app.listen(PORT, () =>
       console.log(`Servidor corriendo en http://localhost:${PORT}`)

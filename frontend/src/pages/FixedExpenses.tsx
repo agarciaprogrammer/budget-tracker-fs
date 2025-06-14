@@ -67,7 +67,9 @@ export default function FixedExpenses() {
     
     return (
         <div className={styles.container}>
-            <h1>Gastos Fijos</h1>
+            <div className={styles.header}>
+                <h1 className={styles.title}>Gastos Fijos</h1>
+            </div>
             <button onClick={() => setIsModalOpen(true)} className={styles.addButton}>Agregar Gasto Fijo</button>
             <Modal
                 isOpen={isModalOpen}

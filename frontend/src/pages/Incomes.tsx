@@ -100,14 +100,14 @@ export default function Incomes() {
     return (
         <div className={styles.container}>
             <div className={styles.header}>
-                <h1 className={styles.title}>Ingresos</h1>
-                <button 
+                <h1 className={styles.title}>Ingresos</h1>            
+            </div>
+            <button 
                     className={styles.button}
                     onClick={() => setIsModalOpen(true)}
                 >
                     Agregar Ingreso
                 </button>
-            </div>
 
             <Modal 
                 isOpen={isModalOpen} 
