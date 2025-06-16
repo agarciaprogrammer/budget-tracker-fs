@@ -1,10 +1,12 @@
 import { useState, useEffect } from 'react';
 import styles from '../styles/global.module.css';
-import { getIncomes, createIncome, deleteIncome } from '../services/incomeService';
+import { getIncomes, createIncome, deleteIncome, updateIncome } from '../services/incomeService';
 import { getCurrentUser } from '../services/authService';
 import type { Income } from '../types';
 import Modal from '../components/Modal';
-import FormField from '../components/FormField';  
+import FormField from '../components/FormField';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faChevronLeft, faChevronRight } from '@fortawesome/free-solid-svg-icons';
 
 export default function Incomes() {
     const [incomes, setIncomes] = useState<Income[]>([]);
@@ -14,6 +16,8 @@ export default function Incomes() {
     const [type, setType] = useState('regular');
     const [loading, setLoading] = useState(false);
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [currentMonth, setCurrentMonth] = useState(new Date());
+    const [editingIncome, setEditingIncome] = useState<Income | null>(null);
     const currentUser = getCurrentUser();
 
     const fetchIncomes = async () => {
@@ -21,7 +25,13 @@ export default function Incomes() {
         setLoading(true);
         try {
             const data = await getIncomes();
-            setIncomes(data);
+            // Filter incomes for current month
+            const filteredIncomes = data.filter(income => {
+                const incomeDate = new Date(income.date);
+                return incomeDate.getMonth() === currentMonth.getMonth() &&
+                       incomeDate.getFullYear() === currentMonth.getFullYear();
+            });
+            setIncomes(filteredIncomes);
         } catch (err) {
             console.error('Error fetching incomes:', err);
         } finally {
@@ -33,7 +43,7 @@ export default function Incomes() {
         if (currentUser) {
             fetchIncomes();
         }
-    }, []);
+    }, [currentMonth]); // Refetch when month changes
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -41,19 +51,32 @@ export default function Incomes() {
         if (!amount || !date) return;
 
         try {
-            await createIncome({
-                amount: parseFloat(amount),
-                description,
-                date,
-                userId: currentUser?.id || 0,
-                type: type,
-            });
+            if (editingIncome) {
+                await updateIncome(editingIncome.id, {
+                    amount: parseFloat(amount),
+                    description,
+                    date,
+                    userId: currentUser?.id || 0,
+                    type: type,
+                });
+            } else {
+                await createIncome({
+                    amount: parseFloat(amount),
+                    description,
+                    date,
+                    userId: currentUser?.id || 0,
+                    type: type,
+                });
+            }
             setAmount('');
             setDescription('');
             setDate('');
+            setType('regular');
+            setEditingIncome(null);
+            setIsModalOpen(false);
             fetchIncomes();
         } catch (err) {
-            console.error('Error creating income:', err);
+            console.error('Error creating/updating income:', err);
         }
     }
 
@@ -67,52 +90,88 @@ export default function Incomes() {
         }
     };
 
+    const handleEdit = (income: Income) => {
+        setEditingIncome(income);
+        setAmount(income.amount.toString());
+        setDescription(income.description || '');
+        setDate(income.date);
+        setType(income.type);
+        setIsModalOpen(true);
+    };
+
+    const changeMonth = (direction: 'prev' | 'next') => {
+        const newDate = new Date(currentMonth);
+        if (direction === 'prev') {
+            newDate.setMonth(newDate.getMonth() - 1);
+        } else {
+            newDate.setMonth(newDate.getMonth() + 1);
+        }
+        setCurrentMonth(newDate);
+    };
+
+    const getMonthName = (date: Date) => {
+        return date.toLocaleString('es-AR', { month: 'long', year: 'numeric' });
+    };
+
     const getCurrentMonthTotal = () => {
-        const now = new Date();
-        const currentMonth = now.getMonth();
-        const currentYear = now.getFullYear();
-        
-        // Sum all incomes (both salary and non-salary) for the current month
-        return incomes
-            .filter(income => {
-                const incomeDate = new Date(income.date);
-                return incomeDate.getMonth() === currentMonth && 
-                       incomeDate.getFullYear() === currentYear;
-            })
-            .reduce((total, income) => total + income.amount, 0);
+        return incomes.reduce((total, income) => total + income.amount, 0);
     };
 
     const getCurrentMonthSalary = () => {
-        const now = new Date();
-        const currentMonth = now.getMonth();
-        const currentYear = now.getFullYear();
-        
         return incomes
-            .filter(income => {
-                const incomeDate = new Date(income.date);
-                return incomeDate.getMonth() === currentMonth && 
-                       incomeDate.getFullYear() === currentYear &&
-                       income.type === 'salary';
-            })
+            .filter(income => income.type === 'salary')
             .reduce((total, income) => total + income.amount, 0);
     };
 
     return (
         <div className={styles.container}>
             <div className={styles.header}>
-                <h1 className={styles.title}>Ingresos</h1>            
+                <h1 className={styles.title}>Ingresos</h1>
+                <div className={styles.headerActions}>
+                    <div className={styles.monthNavigation}>
+                        <button 
+                            className={styles.monthButton}
+                            onClick={() => changeMonth('prev')}
+                        >
+                            <FontAwesomeIcon icon={faChevronLeft} />
+                        </button>
+                        <span className={styles.currentMonth}>
+                            {getMonthName(currentMonth)}
+                        </span>
+                        <button 
+                            className={styles.monthButton}
+                            onClick={() => changeMonth('next')}
+                        >
+                            <FontAwesomeIcon icon={faChevronRight} />
+                        </button>
+                    </div>
+                </div>
             </div>
             <button 
-                    className={styles.button}
-                    onClick={() => setIsModalOpen(true)}
-                >
-                    Agregar Ingreso
-                </button>
+                className={styles.button}
+                style={{
+                    
+                    marginBottom: '1rem',
+                }}
+                onClick={() => {
+                    setEditingIncome(null);
+                    setAmount('');
+                    setDescription('');
+                    setDate('');
+                    setType('regular');
+                    setIsModalOpen(true);
+                }}
+            >
+                Agregar Ingreso
+            </button>
 
             <Modal 
                 isOpen={isModalOpen} 
-                onClose={() => setIsModalOpen(false)}
-                title="Agregar Ingreso"
+                onClose={() => {
+                    setIsModalOpen(false);
+                    setEditingIncome(null);
+                }}
+                title={editingIncome ? "Editar Ingreso" : "Agregar Ingreso"}
             >
                 <form onSubmit={handleSubmit} className={styles.form}>
                     <FormField
@@ -144,15 +203,14 @@ export default function Incomes() {
                         value={type}
                         onChange={(e) => setType(e.target.value)}
                         options={[
-                        { value: "regular", label: "Ingreso Regular" },
-                        { value: "salary", label: "Sueldo" }
+                            { value: "regular", label: "Ingreso Regular" },
+                            { value: "salary", label: "Sueldo" }
                         ]}
                     />
                     <button type="submit" className={styles.buttonFormField}>
-                        Agregar
+                        {editingIncome ? "Guardar" : "Agregar"}
                     </button>
-                    </form>
-
+                </form>
             </Modal>
 
             {loading ? (
@@ -176,7 +234,7 @@ export default function Incomes() {
                                         <td>{income.description || '-'}</td>
                                         <td>${income.amount.toFixed(2)}</td>
                                         <td>
-                                            {new Date(income.date).toLocaleDateString('es-AR', {
+                                            {new Date(new Date(income.date).getTime() + 24 * 60 * 60 * 1000).toLocaleDateString('es-AR', {
                                                 day: '2-digit',
                                                 month: '2-digit',
                                                 year: 'numeric',
@@ -185,6 +243,12 @@ export default function Incomes() {
                                         <td>{income.type === 'salary' ? 'Sueldo' : 'Regular'}</td>
                                         <td>
                                             <div className={styles.actions}>
+                                                <button
+                                                    onClick={() => handleEdit(income)}
+                                                    className={styles.buttonEdit}
+                                                >
+                                                    Editar
+                                                </button>
                                                 <button
                                                     onClick={() => handleDelete(income.id)}
                                                     className={styles.buttonDelete}
@@ -197,7 +261,7 @@ export default function Incomes() {
                                 ))}
                                 {incomes.length === 0 && (
                                     <tr>
-                                        <td colSpan={4}>Sin ingresos registrados.</td>
+                                        <td colSpan={5}>Sin ingresos registrados.</td>
                                     </tr>
                                 )}
                             </tbody>

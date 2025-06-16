@@ -15,6 +15,7 @@ export default function Navbar() {
     <nav className={navStyle.navbar}>
       <ul className={navStyle.navList}>
         <li><Link to="/home" className={navStyle.link}>Inicio</Link></li>
+        <li><Link to="/dashboard" className={navStyle.link}>Dashboard</Link></li>
         <li><Link to="/expenses" className={navStyle.link}>Gastos</Link></li>
         <li><Link to="/category" className={navStyle.link}>Categorias</Link></li>
         <li><Link to="/incomes" className={navStyle.link}>Ingresos</Link></li>

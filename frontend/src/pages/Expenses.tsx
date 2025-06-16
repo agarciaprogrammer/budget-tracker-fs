@@ -34,6 +34,8 @@ export default function Expenses() {
     sortBy: 'date',
     sortOrder: 'desc'
   });
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 6;
   const currentUser = getCurrentUser();
 
   const fetchExpenses = async () => {
@@ -194,9 +196,10 @@ export default function Expenses() {
     // Calculate total fixed expenses for current month
     const totalFixedExpenses = fixedExpenses
       .filter(fixedExpense => {
-        const fixedExpenseDate = new Date(fixedExpense.date);
+        const fixedExpenseDate = new Date(fixedExpense.startDate);
         return fixedExpenseDate.getMonth() === currentMonth.getMonth() &&
-               fixedExpenseDate.getFullYear() === currentMonth.getFullYear();
+               fixedExpenseDate.getFullYear() === currentMonth.getFullYear() &&
+               fixedExpense.isActive;
       })
       .reduce((sum, fixedExpense) => sum + fixedExpense.amount, 0);
     
@@ -264,6 +267,16 @@ export default function Expenses() {
   };
 
   const filteredExpenses = applyFilters(expenses);
+  
+  // Calculate pagination
+  const totalPages = Math.ceil(filteredExpenses.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const currentExpenses = filteredExpenses.slice(startIndex, endIndex);
+
+  const handlePageChange = (newPage: number) => {
+    setCurrentPage(newPage);
+  };
 
   return (
     <div className={styles.container}>
@@ -475,12 +488,12 @@ export default function Expenses() {
                   </tr>
                 </thead>
                 <tbody>
-                  {filteredExpenses.map((exp) => (
+                  {currentExpenses.map((exp) => (
                     <tr key={exp.id}>
                       <td>{exp.description || '-'}</td>
                       <td>${exp.amount.toFixed(2)}</td>
                       <td>
-                        {new Date(exp.date).toLocaleDateString('es-AR', {
+                        {new Date(new Date(exp.date).getTime() + 24 * 60 * 60 * 1000).toLocaleDateString('es-AR', {
                           day: '2-digit',
                           month: '2-digit',
                           year: 'numeric',
@@ -507,7 +520,7 @@ export default function Expenses() {
                       </td>
                     </tr>
                   ))}
-                  {filteredExpenses.length === 0 && (
+                  {currentExpenses.length === 0 && (
                     <tr>
                       <td colSpan={5}>Sin gastos registrados.</td>
                     </tr>
@@ -515,6 +528,26 @@ export default function Expenses() {
                 </tbody>
               </table>
             </div>
+          </div>
+
+          <div className={styles.pagination}>
+            <button
+              className={styles.paginationButton}
+              onClick={() => handlePageChange(currentPage - 1)}
+              disabled={currentPage === 1}
+            >
+              <FontAwesomeIcon icon={faChevronLeft} />
+            </button>
+            <span className={styles.pageInfo}>
+              Página {currentPage} de {totalPages}
+            </span>
+            <button
+              className={styles.paginationButton}
+              onClick={() => handlePageChange(currentPage + 1)}
+              disabled={currentPage === totalPages}
+            >
+              <FontAwesomeIcon icon={faChevronRight} />
+            </button>
           </div>
 
           <div className={styles.summary}>

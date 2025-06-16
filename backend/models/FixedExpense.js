@@ -13,9 +13,22 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.STRING,
             allowNull: false
         },
-        date: {
+        startDate: {
             type: DataTypes.DATE,
             allowNull: false
+        },
+        lastPaymentDate: {
+            type: DataTypes.DATE,
+            allowNull: true
+        },
+        nextPaymentDate: {
+            type: DataTypes.DATE,
+            allowNull: true
+        },
+        isActive: {
+            type: DataTypes.BOOLEAN,
+            allowNull: false,
+            defaultValue: true
         },
         userId: {
             type: DataTypes.INTEGER,

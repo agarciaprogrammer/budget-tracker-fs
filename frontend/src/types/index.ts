@@ -11,7 +11,10 @@ export interface FixedExpense {
   id: number;
   amount: number;
   description: string;
-  date: string;
+  startDate: string;
+  lastPaymentDate: string | null;
+  nextPaymentDate: string | null;
+  isActive: boolean;
   userId: number;
 }
 

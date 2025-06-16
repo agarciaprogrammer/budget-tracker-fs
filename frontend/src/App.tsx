@@ -1,7 +1,7 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Home from './pages/Home';
 import Register from './pages/Register';
-//import Dashboard from './pages/Dashboard';
+import Dashboard from './pages/Dashboard';
 import Incomes from './pages/Incomes';
 import FixedExpenses from './pages/FixedExpenses';
 import Category from './pages/Category';
@@ -22,6 +22,7 @@ function App() {
           <Route path="/category" element={<Category />} />
           <Route path="/incomes" element={<Incomes />} />
           <Route path="/fixed-expenses" element={<FixedExpenses />} />
+          <Route path="/dashboard" element={<Dashboard />} />
         </Route>
       </Routes>
     </Router>

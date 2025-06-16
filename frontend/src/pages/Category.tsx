@@ -12,6 +12,7 @@ export default function Category() {
   const [error, setError] = useState('');
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [categoryToDelete, setCategoryToDelete] = useState<number | null>(null);
+  const [isExpanded, setIsExpanded] = useState(false);
   const currentUser = getCurrentUser();
 
   const fetchCategories = async () => {
@@ -34,8 +35,19 @@ export default function Category() {
     }
   };
 
-  const handleCreateCategory = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleButtonClick = () => {
+    if (isExpanded) {
+      // If expanded, try to submit the form
+      if (newCategoryName.trim()) {
+        handleCreateCategory();
+      }
+    } else {
+      // If not expanded, just expand
+      setIsExpanded(true);
+    }
+  };
+
+  const handleCreateCategory = async () => {
     if (!newCategoryName.trim() || !currentUser) return;
 
     try {
@@ -56,6 +68,7 @@ export default function Category() {
       setCategories(prev => [...prev, newCategory]);
       setNewCategoryName('');
       setError('');
+      setIsExpanded(false);
     } catch (err: any) {
       console.error('Error creando categoría:', err);
       if (err.response?.status === 409) {
@@ -95,22 +108,52 @@ export default function Category() {
     fetchCategories();
   }, []);
 
+  // Add click outside handler
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const container = document.querySelector(`.${styles.inputContainer}`);
+      if (container && !container.contains(event.target as Node)) {
+        setIsExpanded(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
   return (
     <div className={styles.container}> 
-      <form onSubmit={handleCreateCategory} className={styles.formFields}>
+      <div className={styles.formFields}>
         <h1 className={styles.title}>Categorías</h1>
-        <input
-          type="text"
-          placeholder="Nueva categoría"
-          value={newCategoryName}
-          onChange={e => setNewCategoryName(e.target.value)}
-          className={styles.input}
-          required
-        />
-        <button type="submit" className={styles.button}>
-          Crear categoría
-        </button>
-      </form>
+        <div className={styles.inputContainer}>
+          <input
+            type="text"
+            placeholder="Nueva categoría"
+            value={newCategoryName}
+            onChange={e => setNewCategoryName(e.target.value)}
+            className={`${styles.input} ${isExpanded ? styles.inputVisible : ''}`}
+            style={{
+              width: '70%',
+              marginBottom: '2rem',
+              marginTop: '-1rem',
+            }}
+            required
+          />
+          <button 
+            type="button"
+            onClick={handleButtonClick}
+            className={`${styles.button} ${isExpanded ? styles.buttonExpanded : ''}`}
+            style={{
+              marginTop: '-1rem',
+              marginBottom: '2rem',
+            }}
+          >
+            Crear categoría
+          </button>
+        </div>
+      </div>
 
       {error && <p className={styles.error}>{error}</p>}
 
