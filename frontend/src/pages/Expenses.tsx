@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import styles from '../styles/global.module.css';
 import { getExpenses, createExpense, deleteExpense, updateExpense } from '../services/expenseService';
 import { getCategories } from '../services/categoryService';
@@ -9,7 +10,7 @@ import type { Category, Expense, FixedExpense, Income } from '../types';
 import Modal from '../components/Modal';
 import FormField from '../components/FormField';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faChevronLeft, faChevronRight, faFilter, faSortUp, faSortDown } from '@fortawesome/free-solid-svg-icons';
+import { faChevronLeft, faChevronRight, faFilter, faSortUp, faSortDown, faPlus } from '@fortawesome/free-solid-svg-icons';
 
 export default function Expenses() {
   const [expenses, setExpenses] = useState<Expense[]>([]);
@@ -37,6 +38,7 @@ export default function Expenses() {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 6;
   const currentUser = getCurrentUser();
+  const navigate = useNavigate();
 
   const fetchExpenses = async () => {
     if (!currentUser) return;
@@ -423,18 +425,28 @@ export default function Expenses() {
             onChange={(e) => setDate(e.target.value)}
             required
           />
-          <FormField
-            label="Categoría: "
-            name="category"
-            type="select"
-            value={categoryId}
-            onChange={(e) => setCategoryId(e.target.value)}
-            options={categories.map(cat => ({
-              value: cat.id.toString(),
-              label: cat.name
-            }))}
-            required
-          />
+          <div className={styles.categoryFieldRow}>
+            <FormField
+              label="Categoría: "
+              name="category"
+              type="select"
+              value={categoryId}
+              onChange={(e) => setCategoryId(e.target.value)}
+              options={categories.map(cat => ({
+                value: cat.id.toString(),
+                label: cat.name
+              }))}
+              required
+            />
+            <button
+              type="button"
+              className={styles.iconButton}
+              title="Agregar nueva categoría"
+              onClick={() => navigate('/category')}
+            >
+              <FontAwesomeIcon icon={faPlus} />
+            </button>
+          </div>
           <button type="submit" className={styles.buttonFormField}>
             {editingExpense ? "Guardar" : "Agregar"}
           </button>

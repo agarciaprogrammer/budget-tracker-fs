@@ -666,3 +666,48 @@ body {
 .buttonExpanded:hover {
   transform: translateX(15rem);
 }
+
+.iconButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 10%;
+  margin-top: -1.5rem;
+  background: none;
+  color: #007aff;
+  border: none;
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 4px;
+  transition: color 0.2s;
+}
+
+.iconButton:hover {
+  color: #4fa4ff;
+}
+
+.categoryFieldRow {
+  display: flex;
+  align-items: flex-end;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.selectFormField {
+  width: 100%;
+  min-width: 25rem;
+}
+
+.iconButton {
+  width: 5rem;
+  height: 5rem;
+  margin-top: 0;
+  padding: 0;
+  font-size: 1.1rem;
+}
+
+.iconButton svg {
+  width: 1.5rem;
+  height: 1.5rem;
+}
+

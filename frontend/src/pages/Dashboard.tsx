@@ -12,6 +12,7 @@ import { getCategories } from '../services/categoryService';
 import { getFixedExpensesByUserId } from '../services/fixedExpenseService';
 import { getCurrentUser } from '../services/authService';
 import type { Expense, Income, Category, FixedExpense } from '../types';
+import type { TooltipProps } from 'recharts';
 
 const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884D8', '#82CA9D'];
 
@@ -206,6 +207,20 @@ export default function Dashboard() {
     return ((currentMonthTotal - previousMonthTotal) / previousMonthTotal) * 100;
   };
 
+  
+
+  const CustomPieTooltip = ({ active, payload }: TooltipProps<'value', string>) => {
+    if (active && payload && payload.length) {
+      const { name, value } = payload[0];
+      return (
+        <div style={{ background: 'white', color: 'black', padding: '8px', borderRadius: '4px' }}>
+          <span>{name}: ${value}</span>
+        </div>
+      );
+    }
+    return null;
+  };
+
   const kpis = calculateKPIs();
   const categoryData = prepareCategoryData();
   const monthlyData = prepareMonthlyData();
@@ -316,6 +331,7 @@ export default function Dashboard() {
                       ))}
                     </Pie>
                     <Tooltip 
+                      content={<CustomPieTooltip />}
                       contentStyle={{ 
                         color: 'black',
                         backgroundColor: 'white',
