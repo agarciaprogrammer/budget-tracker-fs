@@ -2,10 +2,10 @@
 import axios from 'axios';
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001/api';
-console.log('🔍 Config completa:', {
+console.log('🔍 Build time check:', {
   VITE_API_URL: import.meta.env.VITE_API_URL,
   API_BASE_URL,
-  NODE_ENV: import.meta.env.NODE_ENV
+  timestamp: new Date().toISOString()
 });
 
 const api = axios.create({
