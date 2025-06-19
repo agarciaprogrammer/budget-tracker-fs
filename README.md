@@ -16,6 +16,12 @@ A personal budgeting and expense management web application. Users can track the
 - Personal user accounts (multi-user support with isolation).
 - Dashboard with visual charts and summarized metrics.
 - Category selector for each expense, enabling future categorization and visual distribution.
+- **CRUD of Custom Categories** (per user)
+- **Category filtering** in expense views
+- **Recurring expenses** (e.g. subscriptions, rent)
+- **Spending distribution by category** (pie or bar charts)
+- **Monthly comparisons** (spending evolution)
+- **Advanced filtering/searching** in tables
 
 ## 🛠️ Tech Stack
 
@@ -61,21 +67,15 @@ A personal budgeting and expense management web application. Users can track the
 ## 🔮 Future Features (Roadmap)
 
 ### 💡 Expense Management Enhancements
-- **CRUD of Custom Categories** (per user)
-- **Category filtering** in expense views
 - **Tags (free-form labels)** for more flexible classification
 - **Payment Method field** (cash, credit card, debit, etc.)
 - **Expense Notes** for additional details
-- **Recurring expenses** (e.g. subscriptions, rent)
 
 ### 📊 Data Insights & Visualization
-- **Spending distribution by category** (pie or bar charts)
-- **Monthly comparisons** (spending evolution)
 - **Budgets by category** (set spending limits)
 - **Saving goals tracking**
 - **Balance evolution graph** (daily change)
 
 ### 🧰 Usability & Export
-- **Advanced filtering/searching** in tables
 - **Export/Import data** (CSV, Excel)
 - **Dark Mode / Light Mode**
