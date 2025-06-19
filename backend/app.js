@@ -23,7 +23,7 @@ const corsOptions = {
     const allowedOrigins = [
       'http://localhost:5173', // Vite dev server
       'http://localhost:3000', // React dev server
-      'https://your-app-name.vercel.app', // Reemplaza con tu dominio de Vercel
+      'https://budget-tracker-fs.vercel.app/', // Reemplaza con tu dominio de Vercel
       process.env.FRONTEND_URL // Variable de entorno para el frontend
     ].filter(Boolean);
     
