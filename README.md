@@ -28,6 +28,8 @@ A personal budgeting and expense management web application. Users can track the
 **Frontend**
 - React
 - TypeScript
+- Vite
+- Axios
 
 **Backend**
 - Node.js
@@ -35,14 +37,51 @@ A personal budgeting and expense management web application. Users can track the
 - Sequelize ORM
 
 **Database**
-- PostgreSQL
+- PostgreSQL (Supabase)
 
 **Authentication**
 - JWT (JSON Web Tokens)
 
-**Deployment Suggestions**
-- Railway / Render (Backend + DB)
+**Deployment**
 - Vercel (Frontend)
+- Render (Backend)
+- Supabase (Database)
+
+## 🚀 Quick Start
+
+### Prerequisites
+- Node.js (v18 or higher)
+- PostgreSQL (local development)
+- npm or yarn
+
+### Development Setup
+
+1. **Clone the repository**
+   ```bash
+   git clone <repository-url>
+   cd budget-tracker-fs
+   ```
+
+2. **Backend Setup**
+   ```bash
+   cd backend
+   npm install
+   # Create .env file with your database credentials
+   npm run dev
+   ```
+
+3. **Frontend Setup**
+   ```bash
+   cd frontend
+   npm install
+   # Create .env file with VITE_API_URL=http://localhost:3001/api
+   npm run dev
+   ```
+
+4. **Database Setup**
+   - Create a PostgreSQL database
+   - Update `backend/config/config.json` with your database credentials
+   - The tables will be created automatically when you start the backend
 
 ## 📱 Screens (MVP)
 
@@ -64,6 +103,42 @@ A personal budgeting and expense management web application. Users can track the
 - As a user, I want to visualize my financial activity on a dashboard with charts.
 - As a user, I want my data to be secure and only accessible to me.
 
+## 🌐 Deployment
+
+This application is configured for deployment on:
+- **Frontend**: Vercel
+- **Backend**: Render
+- **Database**: Supabase (PostgreSQL)
+
+For detailed deployment instructions, see [DEPLOYMENT-SUPABASE.md](./DEPLOYMENT-SUPABASE.md)
+
+### Environment Variables
+
+**Frontend (.env)**
+```
+VITE_API_URL=http://localhost:3001/api
+```
+
+**Backend (.env) - Development**
+```
+NODE_ENV=development
+DB_USERNAME=postgres
+DB_PASSWORD=your_password
+DB_NAME=budget_tracker
+DB_HOST=localhost
+DB_PORT=5432
+JWT_SECRET=your_jwt_secret
+FRONTEND_URL=http://localhost:5173
+```
+
+**Backend (.env) - Production**
+```
+NODE_ENV=production
+DATABASE_URL=postgresql://postgres:password@host:5432/postgres
+JWT_SECRET=your_jwt_secret
+FRONTEND_URL=https://your-app.vercel.app
+```
+
 ## 🔮 Future Features (Roadmap)
 
 ### 💡 Expense Management Enhancements
@@ -79,3 +154,7 @@ A personal budgeting and expense management web application. Users can track the
 ### 🧰 Usability & Export
 - **Export/Import data** (CSV, Excel)
 - **Dark Mode / Light Mode**
+
+## 📝 License
+
+This project is licensed under the MIT License.

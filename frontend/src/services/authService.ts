@@ -1,8 +1,8 @@
-import axios from 'axios';
+import api from './api';
 import type { User, LoginResponse } from '../types';
 
 export async function login(username: string, password: string): Promise<LoginResponse> {
-  const response = await axios.post<LoginResponse>('/api/auth/login', {
+  const response = await api.post<LoginResponse>('/auth/login', {
     username,
     password
   });
@@ -10,7 +10,7 @@ export async function login(username: string, password: string): Promise<LoginRe
 }
 
 export async function register(username: string, password: string): Promise<User> {
-  const response = await axios.post<User>('/api/auth/register', {
+  const response = await api.post<User>('/auth/register', {
     username,
     password
   });

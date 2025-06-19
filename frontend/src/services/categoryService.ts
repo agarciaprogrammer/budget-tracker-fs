@@ -1,35 +1,21 @@
-import axios from "axios";
+import api from "./api";
 import type { Category } from "../types";
 
-const API_URL = 'http://localhost:3001/api/categories';
-
 export async function getCategories(): Promise<Category[]> {
-  const token = localStorage.getItem('token');
-  const response = await axios.get<Category[]>(API_URL, {
-    headers: {Authorization: `Bearer ${token}`},
-  });
+  const response = await api.get<Category[]>('/categories');
   return response.data;
 }
 
 export async function createCategory(category: Omit<Category, 'id'>): Promise<Category> {
-  const token = localStorage.getItem('token');
-  const response = await axios.post<Category>(API_URL, category, {
-    headers: {Authorization: `Bearer ${token}`},
-  });
+  const response = await api.post<Category>('/categories', category);
   return response.data;
 }
 
 export async function updateCategory(id: number, category: Omit<Category, 'id'>): Promise<Category> {
-  const token = localStorage.getItem('token');
-  const response = await axios.put<Category>(`${API_URL}/${id}`, category, {
-    headers: {Authorization: `Bearer ${token}`},
-  });
+  const response = await api.put<Category>(`/categories/${id}`, category);
   return response.data;
 }
 
 export async function deleteCategory(id: number): Promise<void> {
-  const token = localStorage.getItem('token');
-  await axios.delete(`${API_URL}/${id}`, {
-    headers: {Authorization: `Bearer ${token}`},
-  });
+  await api.delete(`/categories/${id}`);
 }

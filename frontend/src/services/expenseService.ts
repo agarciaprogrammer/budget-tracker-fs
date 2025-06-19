@@ -1,35 +1,21 @@
-import axios from 'axios';
+import api from './api';
 import type { Expense } from '../types';
 
-const API_URL = 'http://localhost:3001/api/expenses';
-
 export async function getExpenses(): Promise<Expense[]> {
-  const token = localStorage.getItem('token');
-  const response = await axios.get<Expense[]>(API_URL, {
-    headers: {Authorization: `Bearer ${token}`},
-  });
+  const response = await api.get<Expense[]>('/expenses');
   return response.data;
 }
 
 export async function createExpense(expense: Omit<Expense, 'id'>): Promise<Expense> {
-  const token = localStorage.getItem('token');
-  const response = await axios.post<Expense>(API_URL, expense, {
-    headers: {Authorization: `Bearer ${token}`},
-  });
+  const response = await api.post<Expense>('/expenses', expense);
   return response.data;
 }
 
 export async function updateExpense(id: number, expense: Omit<Expense, 'id'>): Promise<Expense> {
-  const token = localStorage.getItem('token');
-  const response = await axios.put<Expense>(`${API_URL}/${id}`, expense, {
-    headers: {Authorization: `Bearer ${token}`},
-  });
+  const response = await api.put<Expense>(`/expenses/${id}`, expense);
   return response.data;
 }
 
 export async function deleteExpense(id: number): Promise<void> {
-  const token = localStorage.getItem('token');
-  await axios.delete(`${API_URL}/${id}`, {
-    headers: {Authorization: `Bearer ${token}`},
-  });
+  await api.delete(`/expenses/${id}`);
 }
