@@ -47,17 +47,11 @@ export default function Expenses() {
     setLoading(true);
     try {
       const data = await getExpenses();
-      console.log('Datos recibidos del backend:', data);
       // Filter expenses for current month using the new utility
       const filteredExpenses = data.filter(expense => {
         const expenseDate = getLocalDateFromStr(expense.date);
-        console.log('Fecha del gasto:', expense.date);
-        console.log('Fecha convertida:', expenseDate);
-        console.log('Mes actual:', currentMonth);
-        console.log('¿Mismo mes?:', isSameMonth(expenseDate, currentMonth));
         return isSameMonth(expenseDate, currentMonth);
       });
-      console.log('Gastos filtrados:', filteredExpenses);
       setExpenses(filteredExpenses);
     } catch (err) {
       console.error('Error fetching expenses:', err);
