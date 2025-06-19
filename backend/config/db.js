@@ -7,6 +7,9 @@ let sequelize;
 
 // Si tenemos DATABASE_URL, usarla (tanto para desarrollo como producción)
 if (process.env.DATABASE_URL) {
+  // Detectar si es una conexión del pooler (puerto 6543) o directa
+  const isPooler = process.env.DATABASE_URL.includes(':6543');
+  
   sequelize = new Sequelize(process.env.DATABASE_URL, {
     dialect: 'postgres',
     dialectOptions: {
@@ -17,11 +20,22 @@ if (process.env.DATABASE_URL) {
     },
     logging: env === 'development' ? console.log : false,
     pool: {
-      max: 5,
+      max: isPooler ? 10 : 5, // Más conexiones para pooler
       min: 0,
       acquire: 30000,
       idle: 10000
-    }
+    },
+    // Configuración específica para pooler
+    ...(isPooler && {
+      dialectOptions: {
+        ssl: {
+          require: true,
+          rejectUnauthorized: false
+        },
+        // Deshabilitar prepared statements para pooler
+        prepare: false
+      }
+    })
   });
 } else if (env === 'production') {
   // Fallback para producción sin DATABASE_URL
