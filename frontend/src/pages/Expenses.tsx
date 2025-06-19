@@ -11,6 +11,8 @@ import Modal from '../components/Modal';
 import FormField from '../components/FormField';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronLeft, faChevronRight, faFilter, faSortUp, faSortDown, faPlus } from '@fortawesome/free-solid-svg-icons';
+import { formatMoney } from '../utils/formatMoney';
+import { getLocalDateFromStr, isSameMonth, formatDateForDisplay } from '../utils/dateUtils';
 
 export default function Expenses() {
   const [expenses, setExpenses] = useState<Expense[]>([]);
@@ -45,12 +47,17 @@ export default function Expenses() {
     setLoading(true);
     try {
       const data = await getExpenses();
-      // Filter expenses for current month
+      console.log('Datos recibidos del backend:', data);
+      // Filter expenses for current month using the new utility
       const filteredExpenses = data.filter(expense => {
-        const expenseDate = new Date(expense.date);
-        return expenseDate.getMonth() === currentMonth.getMonth() &&
-               expenseDate.getFullYear() === currentMonth.getFullYear();
+        const expenseDate = getLocalDateFromStr(expense.date);
+        console.log('Fecha del gasto:', expense.date);
+        console.log('Fecha convertida:', expenseDate);
+        console.log('Mes actual:', currentMonth);
+        console.log('¿Mismo mes?:', isSameMonth(expenseDate, currentMonth));
+        return isSameMonth(expenseDate, currentMonth);
       });
+      console.log('Gastos filtrados:', filteredExpenses);
       setExpenses(filteredExpenses);
     } catch (err) {
       console.error('Error fetching expenses:', err);
@@ -176,44 +183,37 @@ export default function Expenses() {
   const calculateTotals = () => {
     const totalExpenses = expenses.reduce((sum, exp) => sum + exp.amount, 0);
     
-    // Calculate total income for current month
+    // Calculate total income for current month using the new utility
     const totalIncome = incomes
       .filter(income => {
-        const incomeDate = new Date(income.date);
-        return incomeDate.getMonth() === currentMonth.getMonth() &&
-               incomeDate.getFullYear() === currentMonth.getFullYear();
+        const incomeDate = getLocalDateFromStr(income.date);
+        return isSameMonth(incomeDate, currentMonth);
       })
       .reduce((sum, income) => sum + income.amount, 0);
 
-    // Calculate salary for current month
+    // Calculate salary for current month using the new utility
     const totalSalary = incomes
       .filter(income => {
-        const incomeDate = new Date(income.date);
-        return income.type === 'salary' &&
-               incomeDate.getMonth() === currentMonth.getMonth() &&
-               incomeDate.getFullYear() === currentMonth.getFullYear();
+        const incomeDate = getLocalDateFromStr(income.date);
+        return income.type === 'salary' && isSameMonth(incomeDate, currentMonth);
       })
       .reduce((sum, income) => sum + income.amount, 0);
 
-    // Calculate total fixed expenses for current month
+    // Calculate total fixed expenses for current month using the new utility
     const totalFixedExpenses = fixedExpenses
       .filter(fixedExpense => {
-        const fixedExpenseDate = new Date(fixedExpense.startDate);
-        return fixedExpenseDate.getMonth() === currentMonth.getMonth() &&
-               fixedExpenseDate.getFullYear() === currentMonth.getFullYear() &&
-               fixedExpense.isActive;
+        const fixedExpenseDate = getLocalDateFromStr(fixedExpense.startDate);
+        return isSameMonth(fixedExpenseDate, currentMonth) && fixedExpense.isActive;
       })
       .reduce((sum, fixedExpense) => sum + fixedExpense.amount, 0);
     
     // Calculate remaining budget
     const remainingBudget = totalIncome - totalExpenses - totalFixedExpenses;
 
-    // Calculate days in month using DAYS360 equivalent
-    const firstDayOfMonth = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), 1);
+    // Calculate days in month
+    //const firstDayOfMonth = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), 1);
     const lastDayOfMonth = new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 0);
-    
-    // DAYS360 equivalent calculation
-    const daysInMonth = Math.floor((lastDayOfMonth.getTime() - firstDayOfMonth.getTime()) / (1000 * 60 * 60 * 24)) + 1;
+    const daysInMonth = lastDayOfMonth.getDate();
     
     // Calculate budget per day
     const budgetPerDay = totalIncome / daysInMonth;
@@ -373,16 +373,14 @@ export default function Expenses() {
         Agregar Gasto
       </button>
 
-      
-
       <div className={styles.summary}>
         <div className={styles.summaryItem}>
           <h3>Presupuesto del Mes</h3>
-          <p>${(totals.totalIncome - totals.totalFixedExpenses).toFixed(2)}</p>
+          <p>${formatMoney(totals.totalIncome - totals.totalFixedExpenses)}</p>
         </div>
         <div className={styles.summaryItem}>
           <h3>Presupuesto por Día</h3>
-          <p>${totals.budgetPerDay.toFixed(2)}</p>
+          <p>${formatMoney(totals.budgetPerDay)}</p>
         </div>
       </div>
       <br />
@@ -503,14 +501,8 @@ export default function Expenses() {
                   {currentExpenses.map((exp) => (
                     <tr key={exp.id}>
                       <td>{exp.description || '-'}</td>
-                      <td>${exp.amount.toFixed(2)}</td>
-                      <td>
-                        {new Date(new Date(exp.date).getTime() + 24 * 60 * 60 * 1000).toLocaleDateString('es-AR', {
-                          day: '2-digit',
-                          month: '2-digit',
-                          year: 'numeric',
-                        })}
-                      </td>
+                      <td>${formatMoney(exp.amount)}</td>
+                      <td>{formatDateForDisplay(exp.date)}</td>
                       <td>
                         {categories.find((cat) => cat.id === exp.categoryId)?.name || 'Sin categoría'}
                       </td>
@@ -565,18 +557,18 @@ export default function Expenses() {
           <div className={styles.summary}>
             <div className={styles.summaryItem}>
               <h3>Gastos del Mes</h3>
-              <p>${totals.totalExpenses.toFixed(2)}</p>
+              <p>${formatMoney(totals.totalExpenses)}</p>
             </div>
             <div className={styles.summaryItem}>
               <h3>Presupuesto Restante</h3>
               <p className={totals.remainingBudget < 0 ? styles.negative : styles.positive}>
-                ${totals.remainingBudget.toFixed(2)}
+                ${formatMoney(totals.remainingBudget)}
               </p>
             </div>
             <div className={styles.summaryItem}>
               <h3>Presupuesto Vs Sueldo</h3>
               <p className={totals.remainingBudget < 0 ? styles.negative : styles.positive}>
-                ${(totals.totalSalary - totals.totalExpenses).toFixed(2)}
+                ${formatMoney(totals.totalSalary - totals.totalExpenses)}
               </p>
             </div>
           </div>

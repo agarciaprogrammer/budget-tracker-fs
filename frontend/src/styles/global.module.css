@@ -489,18 +489,46 @@ body {
   scale: 1.05;
 }
 
-.filtersPanel {
+
+
+.filtersPanel{
   position: fixed;
   top: 0;
   right: 0;
   width: 300px;
   height: 100%;
-  background-color: rgba(255, 255, 255, 0.04);
+  background-color: rgba(255, 255, 255, 0.09);
   box-shadow: -2px 0 5px rgba(0, 0, 0, 0.1);
   padding: 2rem;
   z-index: 1000;
   overflow-y: auto;
   transition: all 0.2s ease;
+}
+
+.filtersPanel .selectFormField {
+  width: 100%;
+  min-width: unset;
+  background-color: rgba(50, 50, 50, 0.7);
+  margin-bottom: 1rem;
+}
+
+.filtersPanel .inputFormField {
+  width: 100%;
+  min-width: unset;
+  background-color: rgba(50, 50, 50, 0.7);
+  margin-bottom: 1rem;
+}
+
+.filtersPanel h3 {
+  margin-bottom: 1.5rem;
+  color: #ffffff;
+  font-size: 1.2rem;
+}
+
+.filtersPanel label {
+  display: block;
+  margin-bottom: 0.5rem;
+  color: #cccccc;
 }
 
 .sortControls {

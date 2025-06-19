@@ -6,7 +6,9 @@ import type { FixedExpense } from '../types';
 import Modal from '../components/Modal';
 import FormField from '../components/FormField';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faToggleOn, faToggleOff, faCalendarAlt } from '@fortawesome/free-solid-svg-icons';
+import { faToggleOn, faToggleOff } from '@fortawesome/free-solid-svg-icons';
+import { formatMoney } from '../utils/formatMoney';
+import { formatDateForDisplay } from '../utils/dateUtils';
 
 export default function FixedExpenses() {
     const [fixedExpenses, setFixedExpenses] = useState<FixedExpense[]>([]);
@@ -115,20 +117,12 @@ export default function FixedExpenses() {
     const getNextPaymentDate = (expense: FixedExpense) => {
         if (!expense.isActive) return 'Inactivo';
         if (!expense.nextPaymentDate) return 'Pendiente';
-        return new Date(expense.nextPaymentDate).toLocaleDateString('es-AR', {
-            day: '2-digit',
-            month: '2-digit',
-            year: 'numeric',
-        });
+        return formatDateForDisplay(expense.nextPaymentDate);
     };
 
     const getLastPaymentDate = (expense: FixedExpense) => {
         if (!expense.lastPaymentDate) return 'Nunca';
-        return new Date(expense.lastPaymentDate).toLocaleDateString('es-AR', {
-            day: '2-digit',
-            month: '2-digit',
-            year: 'numeric',
-        });
+        return formatDateForDisplay(expense.lastPaymentDate);
     };
 
     const filteredExpenses = showInactive 
@@ -276,14 +270,8 @@ export default function FixedExpenses() {
                                 {filteredExpenses.map((expense) => (
                                     <tr key={expense.id} className={!expense.isActive ? styles.inactiveRow : ''}>
                                         <td>{expense.description}</td>
-                                        <td>${expense.amount.toFixed(2)}</td>
-                                        <td>
-                                            {new Date(expense.startDate).toLocaleDateString('es-AR', {
-                                                day: '2-digit',
-                                                month: '2-digit',
-                                                year: 'numeric',
-                                            })}
-                                        </td>
+                                        <td>${formatMoney(expense.amount)}</td>
+                                        <td>{formatDateForDisplay(expense.startDate)}</td>
                                         <td>{getLastPaymentDate(expense)}</td>
                                         <td>{getNextPaymentDate(expense)}</td>
                                         <td>
@@ -330,10 +318,9 @@ export default function FixedExpenses() {
             <div className={styles.summary}>
                 <div className={styles.summaryItem}>
                     <h3>Total Gastos Fijos Activos</h3>
-                    <p>${fixedExpenses
+                    <p>${formatMoney(fixedExpenses
                         .filter(expense => expense.isActive)
-                        .reduce((total, expense) => total + expense.amount, 0)
-                        .toFixed(2)}</p>
+                        .reduce((total, expense) => total + expense.amount, 0))}</p>
                 </div>
                 <div className={styles.summaryItem}>
                     <h3>Cantidad de Gastos Fijos</h3>

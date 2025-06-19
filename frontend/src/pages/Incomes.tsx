@@ -7,6 +7,8 @@ import Modal from '../components/Modal';
 import FormField from '../components/FormField';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronLeft, faChevronRight } from '@fortawesome/free-solid-svg-icons';
+import { formatMoney } from '../utils/formatMoney';
+import { getLocalDateFromStr, isSameMonth, formatDateForDisplay } from '../utils/dateUtils';
 
 export default function Incomes() {
     const [incomes, setIncomes] = useState<Income[]>([]);
@@ -25,11 +27,10 @@ export default function Incomes() {
         setLoading(true);
         try {
             const data = await getIncomes();
-            // Filter incomes for current month
+            // Filter incomes for current month using the new utility
             const filteredIncomes = data.filter(income => {
-                const incomeDate = new Date(income.date);
-                return incomeDate.getMonth() === currentMonth.getMonth() &&
-                       incomeDate.getFullYear() === currentMonth.getFullYear();
+                const incomeDate = getLocalDateFromStr(income.date);
+                return isSameMonth(incomeDate, currentMonth);
             });
             setIncomes(filteredIncomes);
         } catch (err) {
@@ -232,14 +233,8 @@ export default function Incomes() {
                                 {incomes.map((income) => (
                                     <tr key={income.id}>
                                         <td>{income.description || '-'}</td>
-                                        <td>${income.amount.toFixed(2)}</td>
-                                        <td>
-                                            {new Date(new Date(income.date).getTime() + 24 * 60 * 60 * 1000).toLocaleDateString('es-AR', {
-                                                day: '2-digit',
-                                                month: '2-digit',
-                                                year: 'numeric',
-                                            })}
-                                        </td>
+                                        <td>${formatMoney(income.amount)}</td>
+                                        <td>{formatDateForDisplay(income.date)}</td>
                                         <td>{income.type === 'salary' ? 'Sueldo' : 'Regular'}</td>
                                         <td>
                                             <div className={styles.actions}>
@@ -273,11 +268,11 @@ export default function Incomes() {
             <div className={styles.summary}>
                 <div className={styles.summaryItem}>
                     <h3>Total del Mes</h3>
-                    <p>${getCurrentMonthTotal().toFixed(2)}</p>
+                    <p>${formatMoney(getCurrentMonthTotal())}</p>
                 </div>
                 <div className={styles.summaryItem}>
                     <h3>Sueldo del Mes</h3>
-                    <p>${getCurrentMonthSalary().toFixed(2)}</p>
+                    <p>${formatMoney(getCurrentMonthSalary())}</p>
                 </div>
             </div>
         </div>

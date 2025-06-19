@@ -13,6 +13,8 @@ import { getFixedExpensesByUserId } from '../services/fixedExpenseService';
 import { getCurrentUser } from '../services/authService';
 import type { Expense, Income, Category, FixedExpense } from '../types';
 import type { TooltipProps } from 'recharts';
+import { formatMoney } from '../utils/formatMoney';
+import { getLocalDateFromStr, isSameMonth } from '../utils/dateUtils';
 
 const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884D8', '#82CA9D'];
 
@@ -46,19 +48,19 @@ export default function Dashboard() {
       const sixMonthsAgo = new Date(currentMonth.getFullYear(), currentMonth.getMonth() - 5, 1);
       const endOfCurrentMonth = new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 0);
 
-      // Filter data for the last 6 months
+      // Filter data for the last 6 months using the new utility
       const filteredExpenses = expensesData.filter(expense => {
-        const expenseDate = new Date(expense.date);
+        const expenseDate = getLocalDateFromStr(expense.date);
         return expenseDate >= sixMonthsAgo && expenseDate <= endOfCurrentMonth;
       });
 
       const filteredIncomes = incomesData.filter(income => {
-        const incomeDate = new Date(income.date);
+        const incomeDate = getLocalDateFromStr(income.date);
         return incomeDate >= sixMonthsAgo && incomeDate <= endOfCurrentMonth;
       });
 
       const filteredFixedExpenses = fixedExpensesData.filter(fixedExpense => {
-        const fixedExpenseDate = new Date(fixedExpense.startDate);
+        const fixedExpenseDate = getLocalDateFromStr(fixedExpense.startDate);
         return fixedExpenseDate >= sixMonthsAgo && 
                fixedExpenseDate <= endOfCurrentMonth &&
                fixedExpense.isActive;
@@ -94,24 +96,20 @@ export default function Dashboard() {
   };
 
   const calculateKPIs = () => {
-    // Filter data for current month only
+    // Filter data for current month only using the new utility
     const currentMonthExpenses = expenses.filter(expense => {
-      const expenseDate = new Date(expense.date);
-      return expenseDate.getMonth() === currentMonth.getMonth() &&
-             expenseDate.getFullYear() === currentMonth.getFullYear();
+      const expenseDate = getLocalDateFromStr(expense.date);
+      return isSameMonth(expenseDate, currentMonth);
     });
 
     const currentMonthIncomes = incomes.filter(income => {
-      const incomeDate = new Date(income.date);
-      return incomeDate.getMonth() === currentMonth.getMonth() &&
-             incomeDate.getFullYear() === currentMonth.getFullYear();
+      const incomeDate = getLocalDateFromStr(income.date);
+      return isSameMonth(incomeDate, currentMonth);
     });
 
     const currentMonthFixedExpenses = fixedExpenses.filter(fixedExpense => {
-      const fixedExpenseDate = new Date(fixedExpense.startDate);
-      return fixedExpenseDate.getMonth() === currentMonth.getMonth() &&
-             fixedExpenseDate.getFullYear() === currentMonth.getFullYear() &&
-             fixedExpense.isActive;
+      const fixedExpenseDate = getLocalDateFromStr(fixedExpense.startDate);
+      return isSameMonth(fixedExpenseDate, currentMonth) && fixedExpense.isActive;
     });
 
     const totalExpenses = currentMonthExpenses.reduce((sum, exp) => sum + exp.amount, 0);
@@ -141,9 +139,8 @@ export default function Dashboard() {
   const prepareCategoryData = () => {
     // Filter expenses for current month only
     const currentMonthExpenses = expenses.filter(expense => {
-      const expenseDate = new Date(expense.date);
-      return expenseDate.getMonth() === currentMonth.getMonth() &&
-             expenseDate.getFullYear() === currentMonth.getFullYear();
+      const expenseDate = getLocalDateFromStr(expense.date);
+      return isSameMonth(expenseDate, currentMonth);
     });
 
     const categoryTotals = currentMonthExpenses.reduce((acc, expense) => {
@@ -166,15 +163,13 @@ export default function Dashboard() {
     for (let i = 5; i >= 0; i--) {
       const date = new Date(currentMonth.getFullYear(), currentMonth.getMonth() - i, 1);
       const monthExpenses = expenses.filter(expense => {
-        const expenseDate = new Date(expense.date);
-        return expenseDate.getMonth() === date.getMonth() &&
-               expenseDate.getFullYear() === date.getFullYear();
+        const expenseDate = getLocalDateFromStr(expense.date);
+        return isSameMonth(expenseDate, date);
       });
       
       const monthIncomes = incomes.filter(income => {
-        const incomeDate = new Date(income.date);
-        return incomeDate.getMonth() === date.getMonth() &&
-               incomeDate.getFullYear() === date.getFullYear();
+        const incomeDate = getLocalDateFromStr(income.date);
+        return isSameMonth(incomeDate, date);
       });
 
       months.push({
@@ -189,17 +184,15 @@ export default function Dashboard() {
 
   const calculateSpendingTrend = () => {
     const currentMonthExpenses = expenses.filter(expense => {
-      const expenseDate = new Date(expense.date);
-      return expenseDate.getMonth() === currentMonth.getMonth() &&
-             expenseDate.getFullYear() === currentMonth.getFullYear();
+      const expenseDate = getLocalDateFromStr(expense.date);
+      return isSameMonth(expenseDate, currentMonth);
     });
     const currentMonthTotal = currentMonthExpenses.reduce((sum, exp) => sum + exp.amount, 0);
 
     const previousMonth = new Date(currentMonth.getFullYear(), currentMonth.getMonth() - 1, 1);
     const previousMonthExpenses = expenses.filter(expense => {
-      const expenseDate = new Date(expense.date);
-      return expenseDate.getMonth() === previousMonth.getMonth() &&
-             expenseDate.getFullYear() === previousMonth.getFullYear();
+      const expenseDate = getLocalDateFromStr(expense.date);
+      return isSameMonth(expenseDate, previousMonth);
     });
     const previousMonthTotal = previousMonthExpenses.reduce((sum, exp) => sum + exp.amount, 0);
 
@@ -258,16 +251,16 @@ export default function Dashboard() {
           <div className={styles.summary}>
             <div className={styles.summaryItem}>
               <h3>Ingresos Totales</h3>
-              <p>${kpis.totalIncome.toFixed(2)}</p>
+              <p>${formatMoney(kpis.totalIncome)}</p>
             </div>
             <div className={styles.summaryItem}>
               <h3>Gastos Totales</h3>
-              <p>${kpis.totalExpenses.toFixed(2)}</p>
+              <p>${formatMoney(kpis.totalExpenses)}</p>
             </div>
             <div className={styles.summaryItem}>
               <h3>Presupuesto Restante</h3>
               <p className={kpis.savings < 0 ? styles.negative : styles.positive}>
-                ${kpis.savings.toFixed(2)}
+                ${formatMoney(kpis.savings)}
               </p>
             </div>
             <div className={styles.summaryItem}>
@@ -276,7 +269,7 @@ export default function Dashboard() {
             </div>
             <div className={styles.summaryItem}>
               <h3>Gasto Diario Promedio</h3>
-              <p>${kpis.averageDailySpending.toFixed(2)}</p>
+              <p>${formatMoney(kpis.averageDailySpending)}</p>
             </div>
             <div className={styles.summaryItem}>
               <h3>Tendencia de Gastos</h3>

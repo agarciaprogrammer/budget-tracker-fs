@@ -1,0 +1,71 @@
+.welcomeCard {
+  background: rgba(30, 30, 40, 0.45);
+  border-radius: 22px;
+  box-shadow: 0 8px 32px 0 rgba(0,0,0,0.45), 0 1.5px 8px 0 rgba(0,0,0,0.18);
+  padding: 2.5rem 2.5rem 2.2rem 2.5rem;
+  margin: 2.5rem auto 2rem auto;
+  max-width: 540px;
+  color: #f4f4f4;
+  border: 1.5px solid rgba(255,255,255,0.13);
+  backdrop-filter: blur(18px) saturate(180%);
+  -webkit-backdrop-filter: blur(18px) saturate(180%);
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.25s cubic-bezier(.4,2,.6,1), box-shadow 0.25s, border 0.25s;
+}
+
+.welcomeCard::before {
+  content: '';
+  position: absolute;
+  top: -60%;
+  left: -60%;
+  width: 220%;
+  height: 220%;
+  background: radial-gradient(ellipse at 60% 40%, rgba(255,255,255,0.10) 0%, rgba(0,0,0,0.01) 80%);
+  pointer-events: none;
+  z-index: 1;
+  transition: opacity 0.4s;
+}
+
+.welcomeCard:hover {
+  transform: translateY(-8px) scale(1.025) rotateX(5deg);
+  box-shadow: 0 16px 48px 0 rgba(0,0,0,0.55), 0 2px 12px 0 rgba(0,0,0,0.22);
+  border: 2px solid rgba(255,255,255,0.18);
+}
+
+.title {
+  font-size: 1.7rem;
+  font-weight: 800;
+  margin-bottom: 0.7rem;
+  color: #fff;
+  text-align: center;
+  letter-spacing: 0.01em;
+  text-shadow: 0 2px 12px rgba(0,0,0,0.18);
+}
+
+.description {
+  font-size: 1.13rem;
+  margin-bottom: 1.5rem;
+  color: #e0e0e0;
+  text-align: center;
+  text-shadow: 0 1px 6px rgba(0,0,0,0.10);
+}
+
+.stepsTitle {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 0.7rem;
+  color: #90caf9;
+}
+
+.stepsList {
+  padding-left: 1.2rem;
+  font-size: 1rem;
+  color: #f4f4f4;
+  margin-bottom: 0;
+}
+
+.stepsList li {
+  margin-bottom: 0.5rem;
+  line-height: 1.6;
+}

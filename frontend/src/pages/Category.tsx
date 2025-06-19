@@ -8,7 +8,7 @@ import Modal from '../components/Modal';
 export default function Category() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [newCategoryName, setNewCategoryName] = useState('');
-  const [loading, setLoading] = useState(false);
+  //const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [categoryToDelete, setCategoryToDelete] = useState<number | null>(null);
@@ -21,7 +21,7 @@ export default function Category() {
       return;
     }
 
-    setLoading(true);
+    //setLoading(true);
     try {
       const data = await getCategories();
       // Filter categories by current user's ID
@@ -31,7 +31,7 @@ export default function Category() {
       console.error('Error fetching categories:', err);
       setError('Error al cargar las categorías');
     } finally {
-      setLoading(false);
+      //setLoading(false);
     }
   };
 
