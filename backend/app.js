@@ -23,13 +23,18 @@ const corsOptions = {
     const allowedOrigins = [
       'http://localhost:5173', // Vite dev server
       'http://localhost:3000', // React dev server
-      'https://budget-tracker-fs.vercel.app/', // Reemplaza con tu dominio de Vercel
+      'https://budget-tracker-fs.vercel.app', // Sin barra al final
+      'https://budget-tracker-fs.vercel.app/', // Con barra al final
       process.env.FRONTEND_URL // Variable de entorno para el frontend
     ].filter(Boolean);
+    
+    console.log('🔍 Origin recibido:', origin);
+    console.log('🔍 Orígenes permitidos:', allowedOrigins);
     
     if (allowedOrigins.indexOf(origin) !== -1) {
       callback(null, true);
     } else {
+      console.log('❌ Origen no permitido:', origin);
       callback(new Error('No permitido por CORS'));
     }
   },
