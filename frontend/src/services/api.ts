@@ -1,8 +1,8 @@
 // src/services/api.ts
 import axios from 'axios';
 
-//const API_BASE_URL = 'https://expoarte-backend.onrender.com/api';
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001/api';
+const API_BASE_URL = 'https://budget-tracker-backend-iojo.onrender.com/api';
+//const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001/api';
 console.log('🔍 VITE_API_URL:', import.meta.env.VITE_API_URL);
 console.log('🔍 API_BASE_URL usado por Axios:', API_BASE_URL);
 
