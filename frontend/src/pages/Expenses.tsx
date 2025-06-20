@@ -359,7 +359,7 @@ export default function Expenses() {
           setEditingExpense(null);
           setAmount('');
           setDescription('');
-          setDate('');
+          setDate(new Date().toISOString().split('T')[0]);
           setCategoryId('');
           setIsModalOpen(true);
         }}

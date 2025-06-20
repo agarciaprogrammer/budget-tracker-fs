@@ -158,7 +158,7 @@ export default function Incomes() {
                     setEditingIncome(null);
                     setAmount('');
                     setDescription('');
-                    setDate('');
+                    setDate(new Date().toISOString().split('T')[0]);
                     setType('regular');
                     setIsModalOpen(true);
                 }}

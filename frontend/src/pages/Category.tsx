@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, type KeyboardEvent } from 'react';
 import styles from '../styles/global.module.css';
 import { getCategories, createCategory, deleteCategory } from '../services/categoryService';
 import { getCurrentUser } from '../services/authService';
@@ -79,6 +79,13 @@ export default function Category() {
     }
   };
 
+  const handleKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === 'Enter') {
+      event.preventDefault();
+      handleCreateCategory();
+    }
+  };
+
   const handleDelete = (id: number) => {
     setCategoryToDelete(id);
     setIsDeleteModalOpen(true);
@@ -133,6 +140,7 @@ export default function Category() {
             placeholder="Nueva categoría"
             value={newCategoryName}
             onChange={e => setNewCategoryName(e.target.value)}
+            onKeyDown={handleKeyDown}
             className={`${styles.input} ${isExpanded ? styles.inputVisible : ''}`}
             style={{
               width: '70%',

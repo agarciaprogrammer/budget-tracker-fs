@@ -71,7 +71,7 @@ export default function FixedExpenses() {
             }
             setAmount('');
             setDescription('');
-            setStartDate('');
+            setStartDate(new Date().toISOString().split('T')[0]);
             setEditingExpense(null);
             setIsModalOpen(false);
             fetchFixedExpenses();
@@ -148,7 +148,7 @@ export default function FixedExpenses() {
                     setEditingExpense(null);
                     setAmount('');
                     setDescription('');
-                    setStartDate('');
+                    setStartDate(new Date().toISOString().split('T')[0]);
                     setIsModalOpen(true);
                 }} 
                 className={styles.addButton}

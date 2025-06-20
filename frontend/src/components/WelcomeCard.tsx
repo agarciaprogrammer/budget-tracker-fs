@@ -9,9 +9,10 @@ export default function WelcomeCard() {
       </p>
       <h3 className={styles.stepsTitle}>Pasos para crear tu primer gasto:</h3>
       <ol className={styles.stepsList}>
+        <li>Primero, crea una categoría en la sección <b>Categorías</b>.</li>
         <li>Ve a la sección <b>Gastos</b> desde el menú.</li>
         <li>Haz clic en <b>Agregar Gasto</b>.</li>
-        <li>Completa el formulario con el monto, categoría (debe ser creada previamente) y fecha.</li>
+        <li>Completa el formulario con el monto, categoría y fecha.</li>
         <li>Guarda el gasto y ¡listo! Verás tu gasto reflejado en la lista y los gráficos.</li>
       </ol>
     </div>
