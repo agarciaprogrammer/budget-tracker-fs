@@ -1,4 +1,4 @@
-# 💸 Budget Tracker - Full Stack App
+# 💸 Pucher Tracker - Full Stack App
 
 A personal budgeting and expense management web application. Users can track their income, fixed expenses, daily expenses, and calculate monthly/daily budgets, helping maintain financial awareness and discipline.
 
