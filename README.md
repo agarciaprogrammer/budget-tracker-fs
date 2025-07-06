@@ -112,33 +112,6 @@ This application is configured for deployment on:
 
 For detailed deployment instructions, see [DEPLOYMENT-SUPABASE.md](./DEPLOYMENT-SUPABASE.md)
 
-### Environment Variables
-
-**Frontend (.env)**
-```
-VITE_API_URL=http://localhost:3001/api
-```
-
-**Backend (.env) - Development**
-```
-NODE_ENV=development
-DB_USERNAME=postgres
-DB_PASSWORD=your_password
-DB_NAME=budget_tracker
-DB_HOST=localhost
-DB_PORT=5432
-JWT_SECRET=your_jwt_secret
-FRONTEND_URL=http://localhost:5173
-```
-
-**Backend (.env) - Production**
-```
-NODE_ENV=production
-DATABASE_URL=postgresql://postgres:password@host:5432/postgres
-JWT_SECRET=your_jwt_secret
-FRONTEND_URL=https://your-app.vercel.app
-```
-
 ## 🔮 Future Features (Roadmap)
 
 ### 💡 Expense Management Enhancements
