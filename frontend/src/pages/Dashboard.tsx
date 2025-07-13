@@ -92,7 +92,7 @@ export default function Dashboard() {
   };
 
   const getMonthName = (date: Date) => {
-    return date.toLocaleString('es-AR', { month: 'long', year: 'numeric' });
+    return date.toLocaleString('us', { month: 'long', year: 'numeric' });
   };
 
   const calculateKPIs = () => {
@@ -145,7 +145,7 @@ export default function Dashboard() {
 
     const categoryTotals = currentMonthExpenses.reduce((acc, expense) => {
       const category = categories.find(cat => cat.id === expense.categoryId);
-      const categoryName = category ? category.name : 'Sin categoría';
+      const categoryName = category ? category.name : 'No category';
       acc[categoryName] = (acc[categoryName] || 0) + expense.amount;
       return acc;
     }, {} as Record<string, number>);
@@ -250,29 +250,29 @@ export default function Dashboard() {
         <>
           <div className={styles.summary}>
             <div className={styles.summaryItem}>
-              <h3>Ingresos Totales</h3>
+              <h3>Total Income</h3>
               <p>${formatMoney(kpis.totalIncome)}</p>
             </div>
             <div className={styles.summaryItem}>
-              <h3>Gastos Totales</h3>
+              <h3>Total Expenses</h3>
               <p>${formatMoney(kpis.totalExpenses)}</p>
             </div>
             <div className={styles.summaryItem}>
-              <h3>Presupuesto Restante</h3>
+              <h3>Remaining Budget</h3>
               <p className={kpis.savings < 0 ? styles.negative : styles.positive}>
                 ${formatMoney(kpis.savings)}
               </p>
             </div>
             <div className={styles.summaryItem}>
-              <h3>% del Sueldo</h3>
+              <h3>% of Salary</h3>
               <p>{kpis.salaryPercentage.toFixed(1)}%</p>
             </div>
             <div className={styles.summaryItem}>
-              <h3>Gasto Diario Promedio</h3>
+              <h3>Average Daily Expense</h3>
               <p>${formatMoney(kpis.averageDailySpending)}</p>
             </div>
             <div className={styles.summaryItem}>
-              <h3>Tendencia de Gastos</h3>
+              <h3>Spending Trend</h3>
               <p className={spendingTrend > 0 ? styles.negative : styles.positive}>
                 {spendingTrend > 0 ? '+' : ''}{spendingTrend.toFixed(1)}%
               </p>
@@ -281,7 +281,7 @@ export default function Dashboard() {
 
           <div className={styles.chartsContainer}>
             <div className={styles.chartCard}>
-              <h3>Ingresos vs Gastos (Últimos 6 meses)</h3>
+              <h3>Income vs Expenses (Last 6 months)</h3>
               <div style={{ width: '100%', height: 300}}>
                 <ResponsiveContainer>
                   <BarChart data={monthlyData}>
@@ -297,15 +297,15 @@ export default function Dashboard() {
                       }}
                     />
                     <Legend />
-                    <Bar dataKey="income" name="Ingresos" fill="#8884d8" />
-                    <Bar dataKey="expenses" name="Gastos" fill="#82ca9d" />
+                    <Bar dataKey="income" name="Income" fill="#8884d8" />
+                    <Bar dataKey="expenses" name="Expenses" fill="#82ca9d" />
                   </BarChart>
                 </ResponsiveContainer>
               </div>
             </div>
 
             <div className={styles.chartCard}>
-              <h3>Distribución por Categoría</h3>
+              <h3>Distribution by Category</h3>
               <div style={{ width: '100%', height: 300}}>
                 <ResponsiveContainer>
                   <PieChart>
@@ -338,7 +338,7 @@ export default function Dashboard() {
             </div>
 
             <div className={styles.chartCard}>
-              <h3>Tendencia de Gastos</h3>
+              <h3>Spending Trend</h3>
               <div style={{ width: '100%', height: 300}}>
                 <ResponsiveContainer>
                   <LineChart data={monthlyData}>
@@ -357,7 +357,7 @@ export default function Dashboard() {
                     <Line 
                       type="monotone" 
                       dataKey="expenses" 
-                      name="Gastos" 
+                      name="Expenses" 
                       stroke="#8884d8" 
                       strokeWidth={2}
                     />
@@ -367,7 +367,7 @@ export default function Dashboard() {
             </div>
 
             <div className={styles.chartCard}>
-              <h3>Categorias mas gastadas</h3>
+              <h3>Most used categories</h3>
               <div style={{ width: '100%', height: 300, overflowY: 'auto', padding: '20px' }}>
                 {categoryData
                   .sort((a, b) => b.value - a.value)

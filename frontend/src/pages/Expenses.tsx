@@ -104,7 +104,7 @@ export default function Expenses() {
     setEditingExpense(expense);
     setAmount(expense.amount.toString());
     setDescription(expense.description || '');
-    setDate(expense.date);
+    setDate(new Date(expense.date).toISOString().split("T")[0]);
     setCategoryId(expense.categoryId.toString());
     setIsModalOpen(true);
   };
@@ -171,7 +171,7 @@ export default function Expenses() {
   };
 
   const getMonthName = (date: Date) => {
-    return date.toLocaleString('es-AR', { month: 'long', year: 'numeric' });
+    return date.toLocaleString('us', { month: 'long', year: 'numeric' });
   };
 
   const calculateTotals = () => {
@@ -277,7 +277,7 @@ export default function Expenses() {
   return (
     <div className={styles.container}>
       <div className={styles.header}>
-        <h1 className={styles.title}>Gastos</h1>
+        <h1 className={styles.title}>Expenses</h1>
         <div className={styles.headerActions}>
           
           <div className={styles.monthNavigation}>
@@ -302,9 +302,9 @@ export default function Expenses() {
 
       {isFiltersOpen && (
         <div className={styles.filtersPanel}>
-          <h3>Filtros</h3>
+          <h3>Filters</h3>
           <FormField
-            label="Categoría: "
+            label="Category: "
             name="categoryFilter"
             type="select"
             value={filters.categoryId}
@@ -315,29 +315,29 @@ export default function Expenses() {
             }))}
           />
           <FormField
-            label="Monto Mínimo: "
+            label="Mininum Amount: "
             name="minAmount"
             type="number"
             value={filters.minAmount}
             onChange={(e) => setFilters(prev => ({ ...prev, minAmount: e.target.value }))}
           />
           <FormField
-            label="Monto Máximo: "
+            label="Maximum Amount: "
             name="maxAmount"
             type="number"
             value={filters.maxAmount}
             onChange={(e) => setFilters(prev => ({ ...prev, maxAmount: e.target.value }))}
           />
-          <label>Ordenar por:</label>
+          <label>Order By:</label>
           <div className={styles.sortControls}>
             <select
               value={filters.sortBy}
               onChange={(e) => setFilters(prev => ({ ...prev, sortBy: e.target.value }))}
               className={styles.selectFormField}
             >
-              <option value="date">Fecha</option>
-              <option value="amount">Monto</option>
-              <option value="category">Categoría</option>
+              <option value="date">Date</option>
+              <option value="amount">Amount</option>
+              <option value="category">Category</option>
             </select>
             <button
               onClick={() => setFilters(prev => ({ 
@@ -364,16 +364,16 @@ export default function Expenses() {
           setIsModalOpen(true);
         }}
       >
-        Agregar Gasto
+        Add New Expense
       </button>
 
       <div className={styles.summary}>
         <div className={styles.summaryItem}>
-          <h3>Presupuesto del Mes</h3>
+          <h3>Budget of the Month</h3>
           <p>${formatMoney(totals.totalIncome - totals.totalFixedExpenses)}</p>
         </div>
         <div className={styles.summaryItem}>
-          <h3>Presupuesto por Día</h3>
+          <h3>Budget per Day</h3>
           <p>${formatMoney(totals.budgetPerDay)}</p>
         </div>
       </div>
@@ -383,7 +383,7 @@ export default function Expenses() {
             className={styles.filterButton}
             onClick={() => setIsFiltersOpen(!isFiltersOpen)}
           >
-            <FontAwesomeIcon icon={faFilter} /> Filtros
+            <FontAwesomeIcon icon={faFilter} /> Filters
       </button>
 
       <Modal
@@ -392,17 +392,17 @@ export default function Expenses() {
           setIsModalOpen(false);
           setEditingExpense(null);
         }}
-        title={editingExpense ? "Editar Gasto" : "Nuevo Gasto"}
+        title={editingExpense ? "Edit Expense" : "New Expense"}
       >
         <form onSubmit={handleSubmit} className={styles.form}>
           <FormField
-            label="Descripción: "
+            label="Description: "
             name="description"
             value={description}
             onChange={(e) => setDescription(e.target.value)}
           />
           <FormField
-            label="Monto: "
+            label="Amount: "
             name="amount"
             type="number"
             value={amount}
@@ -410,7 +410,7 @@ export default function Expenses() {
             required
           />
           <FormField
-            label="Fecha: "
+            label="Date: "
             name="date"
             type="date"
             value={date}
@@ -419,7 +419,7 @@ export default function Expenses() {
           />
           <div className={styles.categoryFieldRow}>
             <FormField
-              label="Categoría: "
+              label="Category: "
               name="category"
               type="select"
               value={categoryId}
@@ -433,14 +433,14 @@ export default function Expenses() {
             <button
               type="button"
               className={styles.iconButton}
-              title="Agregar nueva categoría"
+              title="Add new category"
               onClick={() => navigate('/category')}
             >
               <FontAwesomeIcon icon={faPlus} />
             </button>
           </div>
           <button type="submit" className={styles.buttonFormField}>
-            {editingExpense ? "Guardar" : "Agregar"}
+            {editingExpense ? "Save" : "Add"}
           </button>
         </form>
       </Modal>
@@ -451,10 +451,10 @@ export default function Expenses() {
           setIsDeleteModalOpen(false);
           setExpenseToDelete(null);
         }}
-        title="Confirmar Eliminación"
+        title="Confirm Delete"
       >
         <div className={styles.deleteConfirmation}>
-          <p>¿Estás seguro que deseas eliminar este gasto?</p>
+          <p>Are you sure you want to delete this expense?</p>
           <div className={styles.deleteActions}>
             <button 
               onClick={() => {
@@ -463,20 +463,20 @@ export default function Expenses() {
               }}
               className={styles.buttonCancel}
             >
-              Cancelar
+              Cancel
             </button>
             <button 
               onClick={confirmDelete}
               className={styles.buttonDelete}
             >
-              Eliminar
+              Delete
             </button>
           </div>
         </div>
       </Modal>
 
       {loading ? (
-        <p>Cargando...</p>
+        <p>Loading...</p>
       ) : (
         <>
           <div className={styles.card}>
@@ -484,11 +484,11 @@ export default function Expenses() {
               <table className={styles.table}>
                 <thead>
                   <tr>
-                    <th>Descripción</th>
-                    <th>Monto</th>
-                    <th>Fecha</th>
-                    <th>Categoría</th>
-                    <th>Acciones</th>
+                    <th>Description</th>
+                    <th>Amount</th>
+                    <th>Date</th>
+                    <th>Category</th>
+                    <th>Actions</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -498,7 +498,7 @@ export default function Expenses() {
                       <td>${formatMoney(exp.amount)}</td>
                       <td>{formatDateForDisplay(exp.date)}</td>
                       <td>
-                        {categories.find((cat) => cat.id === exp.categoryId)?.name || 'Sin categoría'}
+                        {categories.find((cat) => cat.id === exp.categoryId)?.name || 'No category'}
                       </td>
                       <td>
                         <div className={styles.actions}>
@@ -506,13 +506,13 @@ export default function Expenses() {
                             onClick={() => handleEdit(exp)}
                             className={styles.buttonEdit}
                           >
-                            Editar
+                            Edit
                           </button>
                           <button
                             onClick={() => handleDelete(exp.id)}
                             className={styles.buttonDelete}
                           >
-                            Eliminar
+                            Delete
                           </button>
                         </div>
                       </td>
@@ -520,7 +520,7 @@ export default function Expenses() {
                   ))}
                   {currentExpenses.length === 0 && (
                     <tr>
-                      <td colSpan={5}>Sin gastos registrados.</td>
+                      <td colSpan={5}>No expenses</td>
                     </tr>
                   )}
                 </tbody>
@@ -537,7 +537,7 @@ export default function Expenses() {
               <FontAwesomeIcon icon={faChevronLeft} />
             </button>
             <span className={styles.pageInfo}>
-              Página {currentPage} de {totalPages}
+              Page {currentPage} of {totalPages}
             </span>
             <button
               className={styles.paginationButton}
@@ -550,17 +550,17 @@ export default function Expenses() {
 
           <div className={styles.summary}>
             <div className={styles.summaryItem}>
-              <h3>Gastos del Mes</h3>
+              <h3>Expenses of the Month</h3>
               <p>${formatMoney(totals.totalExpenses)}</p>
             </div>
             <div className={styles.summaryItem}>
-              <h3>Presupuesto Restante</h3>
+              <h3>Remaining Budget</h3>
               <p className={totals.remainingBudget < 0 ? styles.negative : styles.positive}>
                 ${formatMoney(totals.remainingBudget)}
               </p>
             </div>
             <div className={styles.summaryItem}>
-              <h3>Presupuesto Vs Sueldo</h3>
+              <h3>Budget Vs Salary</h3>
               <p className={totals.remainingBudget < 0 ? styles.negative : styles.positive}>
                 ${formatMoney(totals.totalSalary - totals.totalExpenses)}
               </p>

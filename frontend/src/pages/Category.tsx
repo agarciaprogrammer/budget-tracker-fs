@@ -17,7 +17,7 @@ export default function Category() {
 
   const fetchCategories = async () => {
     if (!currentUser) {
-      setError('Usuario no autenticado');
+      setError('User is not authenticated');
       return;
     }
 
@@ -29,7 +29,7 @@ export default function Category() {
       setCategories(userCategories);
     } catch (err) {
       console.error('Error fetching categories:', err);
-      setError('Error al cargar las categorías');
+      setError('Error fetching categories');
     } finally {
       //setLoading(false);
     }
@@ -57,7 +57,7 @@ export default function Category() {
       );
 
       if (existingCategory) {
-        setError('Ya tienes una categoría con este nombre. Por favor, usa un nombre diferente.');
+        setError('You already have a category with this name. Please use a different name.');
         return;
       }
 
@@ -70,11 +70,11 @@ export default function Category() {
       setError('');
       setIsExpanded(false);
     } catch (err: any) {
-      console.error('Error creando categoría:', err);
+      console.error('Error loading categories:', err);
       if (err.response?.status === 409) {
-        setError('Ya existe una categoría con este nombre. Por favor, usa un nombre diferente.');
+        setError('You already have a category with this name. Please use a different name.');
       } else {
-        setError('No se pudo crear la categoría. Por favor, intente nuevamente.');
+        setError('The category could not be created. Please try again.');
       }
     }
   };
@@ -102,9 +102,9 @@ export default function Category() {
     } catch (err: any) {
       console.error('Error deleting category:', err);
       if (err.response?.status === 500) {
-        setError('No se puede eliminar esta categoría porque está siendo utilizada en gastos existentes. Primero elimine o modifique los gastos asociados.');
+        setError('This category cannot be deleted because it is being used in existing expenses. First, delete or modify the associated expenses.');
       } else {
-        setError('No se pudo eliminar la categoría. Por favor, intente nuevamente.');
+        setError('The category could not be created. Please try again.');
       }
       setIsDeleteModalOpen(false);
       setCategoryToDelete(null);
@@ -137,7 +137,7 @@ export default function Category() {
         <div className={styles.inputContainer}>
           <input
             type="text"
-            placeholder="Nueva categoría"
+            placeholder="New category"
             value={newCategoryName}
             onChange={e => setNewCategoryName(e.target.value)}
             onKeyDown={handleKeyDown}
@@ -158,7 +158,7 @@ export default function Category() {
               marginBottom: '2rem',
             }}
           >
-            Crear categoría
+            Add new Category
           </button>
         </div>
       </div>
@@ -170,8 +170,8 @@ export default function Category() {
           <table className={styles.table}>
             <thead>
               <tr>
-                <th>Nombre</th>
-                <th>Acciones</th>
+                <th>Description</th>
+                <th>Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -183,7 +183,7 @@ export default function Category() {
                       onClick={() => handleDelete(category.id)}
                       className={styles.buttonDelete}
                     >
-                      Eliminar
+                      Delete
                     </button>
                   </td>
                 </tr>
@@ -202,7 +202,7 @@ export default function Category() {
         title="Confirmar Eliminación"
       >
         <div className={styles.deleteConfirmation}>
-          <p>¿Estás seguro que deseas eliminar esta categoría?</p>
+          <p>Are you sure you want to delete this category?</p>
           <div className={styles.deleteActions}>
             <button 
               onClick={() => {
@@ -211,13 +211,13 @@ export default function Category() {
               }}
               className={styles.buttonCancel}
             >
-              Cancelar
+              Cancel
             </button>
             <button 
               onClick={confirmDelete}
               className={styles.buttonDelete}
             >
-              Eliminar
+              Delete
             </button>
           </div>
         </div>

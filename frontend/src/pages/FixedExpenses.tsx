@@ -115,13 +115,13 @@ export default function FixedExpenses() {
     };
 
     const getNextPaymentDate = (expense: FixedExpense) => {
-        if (!expense.isActive) return 'Inactivo';
-        if (!expense.nextPaymentDate) return 'Pendiente';
+        if (!expense.isActive) return 'Inactive';
+        if (!expense.nextPaymentDate) return 'Pending';
         return formatDateForDisplay(expense.nextPaymentDate);
     };
 
     const getLastPaymentDate = (expense: FixedExpense) => {
-        if (!expense.lastPaymentDate) return 'Nunca';
+        if (!expense.lastPaymentDate) return 'Never';
         return formatDateForDisplay(expense.lastPaymentDate);
     };
 
@@ -132,13 +132,13 @@ export default function FixedExpenses() {
     return (
         <div className={styles.container}>
             <div className={styles.header}>
-                <h1 className={styles.title}>Gastos Fijos</h1>
+                <h1 className={styles.title}>Fixed Expenses</h1>
                 <div className={styles.headerActions}>
                     <button
                         className={styles.filterButton}
                         onClick={() => setShowInactive(!showInactive)}
                     >
-                        {showInactive ? 'Mostrar Activos' : 'Mostrar Inactivos'}
+                        {showInactive ? 'Show Active' : 'Show Inactive'}
                     </button>
                 </div>
             </div>
@@ -153,7 +153,7 @@ export default function FixedExpenses() {
                 }} 
                 className={styles.addButton}
             >
-                Agregar Gasto Fijo
+                Add Fixed Expense
             </button>
 
             <Modal
@@ -162,18 +162,18 @@ export default function FixedExpenses() {
                     setIsModalOpen(false);
                     setEditingExpense(null);
                 }}
-                title={editingExpense ? "Editar Gasto Fijo" : "Nuevo Gasto Fijo"}
+                title={editingExpense ? "Edit Fixed Expense" : "New Fixed Expense"}
             >
                 <form onSubmit={handleSubmit} className={styles.form}>
                     <FormField
-                        label="Descripción: "
+                        label="Description: "
                         name="description"
                         value={description}
                         onChange={(e) => setDescription(e.target.value)}
                         required
                     />
                     <FormField
-                        label="Monto: "
+                        label="Amount: "
                         name="amount"
                         type="number"
                         value={amount}
@@ -181,7 +181,7 @@ export default function FixedExpenses() {
                         required
                     />
                     <FormField
-                        label="Fecha de Inicio: "
+                        label="Start date: "
                         name="startDate"
                         type="date"
                         value={startDate}
@@ -191,7 +191,7 @@ export default function FixedExpenses() {
                     {editingExpense && (
                         <>
                             <FormField
-                                label="Último Pago: "
+                                label="Last Payment: "
                                 name="lastPaymentDate"
                                 type="date"
                                 value={editingExpense.lastPaymentDate || ''}
@@ -205,7 +205,7 @@ export default function FixedExpenses() {
                                 }}
                             />
                             <FormField
-                                label="Próximo Pago: "
+                                label="Next Payment: "
                                 name="nextPaymentDate"
                                 type="date"
                                 value={editingExpense.nextPaymentDate || ''}
@@ -219,7 +219,7 @@ export default function FixedExpenses() {
                                 }}
                             />
                             <div className={styles.formField}>
-                                <label>Estado:</label>
+                                <label>State:</label>
                                 <div className={styles.toggleContainer}>
                                     <button
                                         type="button"
@@ -244,26 +244,26 @@ export default function FixedExpenses() {
                         </>
                     )}
                     <button type="submit" className={styles.buttonFormField}>
-                        {editingExpense ? "Guardar" : "Agregar"}
+                        {editingExpense ? "Save" : "Add"}
                     </button>
                 </form>
             </Modal>
 
             {loading ? (
-                <p>Cargando...</p>
+                <p>Loading...</p>
             ) : (
                 <div className={styles.card}>
                     <div className={styles.tableWrapper}>
                         <table className={styles.table}>
                             <thead>
                                 <tr>
-                                    <th>Descripción</th>
-                                    <th>Monto</th>
-                                    <th>Fecha de Inicio</th>
-                                    <th>Último Pago</th>
-                                    <th>Próximo Pago</th>
-                                    <th>Estado</th>
-                                    <th>Acciones</th>
+                                    <th>Description</th>
+                                    <th>Amout</th>
+                                    <th>Start Date</th>
+                                    <th>Last Payment</th>
+                                    <th>Next Payment</th>
+                                    <th>State</th>
+                                    <th>Actions</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -278,7 +278,7 @@ export default function FixedExpenses() {
                                             <button
                                                 onClick={() => toggleActive(expense)}
                                                 className={styles.toggleButton}
-                                                title={expense.isActive ? "Desactivar" : "Activar"}
+                                                title={expense.isActive ? "Deactivate" : "Activate"}
                                             >
                                                 <FontAwesomeIcon 
                                                     icon={expense.isActive ? faToggleOn : faToggleOff} 
@@ -292,13 +292,13 @@ export default function FixedExpenses() {
                                                     onClick={() => handleEdit(expense)}
                                                     className={styles.buttonEdit}
                                                 >
-                                                    Editar
+                                                    Edit
                                                 </button>
                                                 <button 
                                                     onClick={() => handleDelete(expense.id)} 
                                                     className={styles.buttonDelete}
                                                 >
-                                                    Eliminar
+                                                    Delete
                                                 </button>
                                             </div>
                                         </td>
@@ -306,7 +306,7 @@ export default function FixedExpenses() {
                                 ))}
                                 {filteredExpenses.length === 0 && (
                                     <tr>
-                                        <td colSpan={7}>Sin gastos fijos registrados.</td>
+                                        <td colSpan={7}>No fixed expenses.</td>
                                     </tr>
                                 )}
                             </tbody>
@@ -317,14 +317,14 @@ export default function FixedExpenses() {
 
             <div className={styles.summary}>
                 <div className={styles.summaryItem}>
-                    <h3>Total Gastos Fijos Activos</h3>
+                    <h3>Total Active Fixed Expenses</h3>
                     <p>${formatMoney(fixedExpenses
                         .filter(expense => expense.isActive)
                         .reduce((total, expense) => total + expense.amount, 0))}</p>
                 </div>
                 <div className={styles.summaryItem}>
-                    <h3>Cantidad de Gastos Fijos</h3>
-                    <p>{fixedExpenses.filter(expense => expense.isActive).length} activos</p>
+                    <h3>Amount of Fixed Expenses</h3>
+                    <p>{fixedExpenses.filter(expense => expense.isActive).length} active</p>
                 </div>
             </div>
         </div>

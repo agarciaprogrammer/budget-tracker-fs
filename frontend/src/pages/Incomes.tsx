@@ -95,7 +95,7 @@ export default function Incomes() {
         setEditingIncome(income);
         setAmount(income.amount.toString());
         setDescription(income.description || '');
-        setDate(income.date);
+        setDate(new Date(income.date).toISOString().split("T")[0]);
         setType(income.type);
         setIsModalOpen(true);
     };
@@ -111,7 +111,7 @@ export default function Incomes() {
     };
 
     const getMonthName = (date: Date) => {
-        return date.toLocaleString('es-AR', { month: 'long', year: 'numeric' });
+        return date.toLocaleString('us', { month: 'long', year: 'numeric' });
     };
 
     const getCurrentMonthTotal = () => {
@@ -127,7 +127,7 @@ export default function Incomes() {
     return (
         <div className={styles.container}>
             <div className={styles.header}>
-                <h1 className={styles.title}>Ingresos</h1>
+                <h1 className={styles.title}>Income</h1>
                 <div className={styles.headerActions}>
                     <div className={styles.monthNavigation}>
                         <button 
@@ -163,7 +163,7 @@ export default function Incomes() {
                     setIsModalOpen(true);
                 }}
             >
-                Agregar Ingreso
+                Add Income
             </button>
 
             <Modal 
@@ -172,17 +172,17 @@ export default function Incomes() {
                     setIsModalOpen(false);
                     setEditingIncome(null);
                 }}
-                title={editingIncome ? "Editar Ingreso" : "Agregar Ingreso"}
+                title={editingIncome ? "Edit Income" : "Add Income"}
             >
                 <form onSubmit={handleSubmit} className={styles.form}>
                     <FormField
-                        label="Descripción:"
+                        label="Description:"
                         name="description"
                         value={description}
                         onChange={(e) => setDescription(e.target.value)}
                     />
                     <FormField
-                        label="Monto:"
+                        label="Amount:"
                         name="amount"
                         type="number"
                         value={amount}
@@ -190,7 +190,7 @@ export default function Incomes() {
                         required
                     />
                     <FormField
-                        label="Fecha:"
+                        label="Date:"
                         name="date"
                         type="date"
                         value={date}
@@ -198,35 +198,35 @@ export default function Incomes() {
                         required
                     />
                     <FormField
-                        label="Tipo:"
+                        label="Type:"
                         name="type"
                         type="select"
                         value={type}
                         onChange={(e) => setType(e.target.value)}
                         options={[
-                            { value: "regular", label: "Ingreso Regular" },
-                            { value: "salary", label: "Sueldo" }
+                            { value: "regular", label: "Regular Income" },
+                            { value: "salary", label: "Salay" }
                         ]}
                     />
                     <button type="submit" className={styles.buttonFormField}>
-                        {editingIncome ? "Guardar" : "Agregar"}
+                        {editingIncome ? "Save" : "Add"}
                     </button>
                 </form>
             </Modal>
 
             {loading ? (
-                <p>Cargando...</p>
+                <p>Loading...</p>
             ) : (
                 <div className={styles.card}>
                     <div className={styles.tableWrapper}>
                         <table className={styles.table}>
                             <thead>
                                 <tr>
-                                    <th>Descripción</th>
-                                    <th>Monto</th>
-                                    <th>Fecha</th>
-                                    <th>Tipo</th>
-                                    <th>Acciones</th>
+                                    <th>Description</th>
+                                    <th>Mount</th>
+                                    <th>Date</th>
+                                    <th>Type</th>
+                                    <th>Actions</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -235,20 +235,20 @@ export default function Incomes() {
                                         <td>{income.description || '-'}</td>
                                         <td>${formatMoney(income.amount)}</td>
                                         <td>{formatDateForDisplay(income.date)}</td>
-                                        <td>{income.type === 'salary' ? 'Sueldo' : 'Regular'}</td>
+                                        <td>{income.type === 'salary' ? 'Salary' : 'Regular'}</td>
                                         <td>
                                             <div className={styles.actions}>
                                                 <button
                                                     onClick={() => handleEdit(income)}
                                                     className={styles.buttonEdit}
                                                 >
-                                                    Editar
+                                                    Edit
                                                 </button>
                                                 <button
                                                     onClick={() => handleDelete(income.id)}
                                                     className={styles.buttonDelete}
                                                 >
-                                                    Eliminar
+                                                    Delete
                                                 </button>
                                             </div>
                                         </td>
@@ -256,7 +256,7 @@ export default function Incomes() {
                                 ))}
                                 {incomes.length === 0 && (
                                     <tr>
-                                        <td colSpan={5}>Sin ingresos registrados.</td>
+                                        <td colSpan={5}>No income.</td>
                                     </tr>
                                 )}
                             </tbody>
@@ -267,11 +267,11 @@ export default function Incomes() {
 
             <div className={styles.summary}>
                 <div className={styles.summaryItem}>
-                    <h3>Total del Mes</h3>
+                    <h3>Month Total</h3>
                     <p>${formatMoney(getCurrentMonthTotal())}</p>
                 </div>
                 <div className={styles.summaryItem}>
-                    <h3>Sueldo del Mes</h3>
+                    <h3>Salary of the Month</h3>
                     <p>${formatMoney(getCurrentMonthSalary())}</p>
                 </div>
             </div>
