@@ -25,19 +25,19 @@ export default function Register() {
       navigate('/home');
     } catch (error) {
       console.error('Error al registrarse:', error);
-      setError('El nombre de usuario ya existe o hubo un problema.');
+      setError('The username already exists or there was a problem.');
     }
   };
 
   return (
     <div className={styles.container}>
       <form onSubmit={handleRegister} className={styles.form}>
-        <h2 className={styles.title}>Registrarse</h2>
+        <h2 className={styles.title}>Sign In</h2>
         {error && <p className={styles.error}>{error}</p>}
 
         <input
           type="text"
-          placeholder="Nombre de usuario"
+          placeholder="Username"
           className={styles.input}
           value={username}
           onChange={(e) => setUsername(e.target.value)}
@@ -46,7 +46,7 @@ export default function Register() {
 
         <input
           type="password"
-          placeholder="Contraseña"
+          placeholder="Password"
           className={styles.input}
           value={password}
           onChange={(e) => setPassword(e.target.value)}
@@ -54,14 +54,14 @@ export default function Register() {
         />
 
         <button type="submit" className={styles.button}>
-          Crear cuenta
+          Create account
         </button>
 
         <p
           style={{ marginTop: '1rem', cursor: 'pointer', color: '#007bff' }}
           onClick={() => navigate('/')}
         >
-          Ya tengo una cuenta
+          I already have an account
         </p>
       </form>
     </div>

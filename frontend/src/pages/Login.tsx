@@ -2,6 +2,7 @@ import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import api from '../services/api';
 import styles from '../styles/login.module.css';
+import LoadingSpinner from '../components/LoadingSpinner';
 
 export default function Login() {
     const navigate = useNavigate();
@@ -29,7 +30,7 @@ export default function Login() {
             setLoginSuccess(true);
         } catch (error) {
             console.error('Login failed:', error);
-            setError('Usuario o contraseña incorrectos');
+            setError('User or password error');
         }
         setIsLoading(false);
     };
@@ -42,14 +43,14 @@ export default function Login() {
   return (
     <div className={styles.container}>
       <form onSubmit={handleLogin} className={styles.form}>
-        <h2 className={styles.title}>Iniciar Sesión</h2>
+        <h2 className={styles.title}>Log In</h2>
         {error && <p className={styles.error}>{error}</p>}
-        {isLoading && <p className={styles.loading}>Cargando...</p>}
-        {loginSuccess && <p className={styles.success}>Inicio de sesión exitoso</p>}
+        {isLoading && <LoadingSpinner />}
+        {loginSuccess && <p className={styles.success}>Logging In...</p>}
 
         <input
           type="text"
-          placeholder="Usuario"
+          placeholder="User"
           className={styles.input}
           value={username}
           onChange={e => setUsername(e.target.value)}
@@ -58,7 +59,7 @@ export default function Login() {
 
         <input
           type="password"
-          placeholder="Contraseña"
+          placeholder="Password"
           className={styles.input}
           value={password}
           onChange={e => setPassword(e.target.value)}
@@ -66,7 +67,7 @@ export default function Login() {
         />
 
         <button type="submit" className={styles.button} style={{width: '94%'}}>
-          Ingresar
+          Log In
         </button>
 
         <button
@@ -74,7 +75,7 @@ export default function Login() {
           className={styles.secondaryButton}
           onClick={handleRegisterRedirect}
         >
-          Registrarse
+          Sign In
         </button>
       </form>
     </div>

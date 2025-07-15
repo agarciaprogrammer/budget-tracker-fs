@@ -9,6 +9,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faToggleOn, faToggleOff } from '@fortawesome/free-solid-svg-icons';
 import { formatMoney } from '../utils/formatMoney';
 import { formatDateForDisplay } from '../utils/dateUtils';
+import LoadingSpinner from '../components/LoadingSpinner';
 
 export default function FixedExpenses() {
     const [fixedExpenses, setFixedExpenses] = useState<FixedExpense[]>([]);
@@ -250,7 +251,7 @@ export default function FixedExpenses() {
             </Modal>
 
             {loading ? (
-                <p>Loading...</p>
+                <LoadingSpinner/>
             ) : (
                 <div className={styles.card}>
                     <div className={styles.tableWrapper}>

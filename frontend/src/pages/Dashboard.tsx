@@ -15,6 +15,7 @@ import type { Expense, Income, Category, FixedExpense } from '../types';
 import type { TooltipProps } from 'recharts';
 import { formatMoney } from '../utils/formatMoney';
 import { getLocalDateFromStr, isSameMonth } from '../utils/dateUtils';
+import LoadingSpinner from '../components/LoadingSpinner';
 
 const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884D8', '#82CA9D'];
 
@@ -245,7 +246,7 @@ export default function Dashboard() {
       </div>
 
       {loading ? (
-        <p>Cargando...</p>
+        <LoadingSpinner />
       ) : (
         <>
           <div className={styles.summary}>

@@ -13,6 +13,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronLeft, faChevronRight, faFilter, faSortUp, faSortDown, faPlus } from '@fortawesome/free-solid-svg-icons';
 import { formatMoney } from '../utils/formatMoney';
 import { getLocalDateFromStr, isSameMonth, formatDateForDisplay } from '../utils/dateUtils';
+import LoadingSpinner from '../components/LoadingSpinner';
 
 export default function Expenses() {
   const [expenses, setExpenses] = useState<Expense[]>([]);
@@ -476,7 +477,7 @@ export default function Expenses() {
       </Modal>
 
       {loading ? (
-        <p>Loading...</p>
+        <LoadingSpinner />
       ) : (
         <>
           <div className={styles.card}>

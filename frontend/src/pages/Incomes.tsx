@@ -9,6 +9,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronLeft, faChevronRight } from '@fortawesome/free-solid-svg-icons';
 import { formatMoney } from '../utils/formatMoney';
 import { getLocalDateFromStr, isSameMonth, formatDateForDisplay } from '../utils/dateUtils';
+import LoadingSpinner from '../components/LoadingSpinner';
 
 export default function Incomes() {
     const [incomes, setIncomes] = useState<Income[]>([]);
@@ -215,7 +216,7 @@ export default function Incomes() {
             </Modal>
 
             {loading ? (
-                <p>Loading...</p>
+                <LoadingSpinner/>
             ) : (
                 <div className={styles.card}>
                     <div className={styles.tableWrapper}>
