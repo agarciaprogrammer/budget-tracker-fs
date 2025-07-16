@@ -206,7 +206,7 @@ export default function Incomes() {
                         onChange={(e) => setType(e.target.value)}
                         options={[
                             { value: "regular", label: "Regular Income" },
-                            { value: "salary", label: "Salay" }
+                            { value: "salary", label: "Salary" }
                         ]}
                     />
                     <button type="submit" className={styles.buttonFormField}>

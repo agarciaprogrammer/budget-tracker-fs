@@ -133,7 +133,7 @@ export default function Category() {
   return (
     <div className={styles.container}> 
       <div className={styles.formFields}>
-        <h1 className={styles.title}>Categorías</h1>
+        <h1 className={styles.title}>Categories</h1>
         <div className={styles.inputContainer}>
           <input
             type="text"
@@ -199,7 +199,7 @@ export default function Category() {
           setIsDeleteModalOpen(false);
           setCategoryToDelete(null);
         }}
-        title="Confirmar Eliminación"
+        title="Confirm Delete"
       >
         <div className={styles.deleteConfirmation}>
           <p>Are you sure you want to delete this category?</p>
